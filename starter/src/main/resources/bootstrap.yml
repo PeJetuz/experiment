@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: spring-starter
+  cloud:
+    config:
+      fail-fast: true
+      uri: http://localhost:8888

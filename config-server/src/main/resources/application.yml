@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations:
+            - classpath:/config # Config files for all microservices
+            - classpath:/config/{application} # Config files for specific applications
+
+server:
+  port: 8888

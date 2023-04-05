@@ -1,0 +1,9 @@
+server:
+  port: 8181
+service1:
+  authenticationsControllerUri: /api
+springdoc:
+  api-docs:
+    path: /javainuse-openapi
+  swagger-ui:
+    path: /swagger-ui.html
