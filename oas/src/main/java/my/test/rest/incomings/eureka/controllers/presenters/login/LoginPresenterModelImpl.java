@@ -34,7 +34,7 @@ public class LoginPresenterModelImpl implements LoginPresenterModel {
     }
 
     @Override
-    public ResponseEntity<Authentication> buildModel() {
+    public ResponseEntity<Authentication> renderModel() {
         if (model != null) {
             return model;
         } else {

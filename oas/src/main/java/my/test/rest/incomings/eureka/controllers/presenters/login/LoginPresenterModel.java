@@ -11,5 +11,5 @@ public interface LoginPresenterModel extends LoginPresenter {
      *
      * @return model for controller
      */
-    ResponseEntity<Authentication> buildModel();
+    ResponseEntity<Authentication> renderModel();
 }

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class LoginPresenterModelImplTest {
 
     @Test
-    public void buildModelTest() {
+    public void renderModelTest() {
         Random random = new Random();
         String userName = "username" + random.nextLong();
         String token = "token" + random.nextLong();
@@ -21,7 +21,7 @@ public class LoginPresenterModelImplTest {
         LoginPresenterModelImpl subj = new LoginPresenterModelImpl(userName);
         subj.writeToken(token);
         subj.writeExpirationDateTime(expirationDateTime);
-        ResponseEntity<Authentication> result = subj.buildModel();
+        ResponseEntity<Authentication> result = subj.renderModel();
         assertEquals(HttpStatus.OK, result.getStatusCode());
         Authentication body = result.getBody();
         assertEquals(userName, body.getUsername());
@@ -30,12 +30,12 @@ public class LoginPresenterModelImplTest {
     }
 
     @Test
-    public void buildModelUserNotFoundTest() {
+    public void renderModelUserNotFoundTest() {
         Random random = new Random();
         String userName = "username" + random.nextLong();
         LoginPresenterModelImpl subj = new LoginPresenterModelImpl(userName);
         subj.initUserNotFoundResponseModel();
-        ResponseEntity<Authentication> result = subj.buildModel();
+        ResponseEntity<Authentication> result = subj.renderModel();
         assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
     }
 }

@@ -34,7 +34,7 @@ public class CreatePresenterModelImpl implements CreatePresenterModel {
     }
 
     @Override
-    public ResponseEntity<Authentication> buildModel() {
+    public ResponseEntity<Authentication> renderModel() {
         if (model != null) {
             return model;
         } else {

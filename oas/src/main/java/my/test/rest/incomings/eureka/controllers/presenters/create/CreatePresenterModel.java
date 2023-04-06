@@ -11,5 +11,5 @@ public interface CreatePresenterModel extends CreatePresenter {
      *
      * @return model for controller
      */
-    ResponseEntity<Authentication> buildModel();
+    ResponseEntity<Authentication> renderModel();
 }
