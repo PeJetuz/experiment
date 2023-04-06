@@ -83,6 +83,11 @@
                                             <maximum>0</maximum>
                                         </limit>
                                         <limit>
+                                            <counter>METHOD</counter>
+                                            <value>MISSEDCOUNT</value>
+                                            <maximum>0</maximum>
+                                        </limit>
+                                        <limit>
                                             <counter>COMPLEXITY</counter>
                                             <value>COVEREDRATIO</value>
                                             <minimum>1.0</minimum>

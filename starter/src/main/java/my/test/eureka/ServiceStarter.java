@@ -1,13 +1,13 @@
 package my.test.eureka;
 
 import java.util.Arrays;
-import my.test.eureka.policy.UserMockBuilderImpl;
-import my.test.eureka.policy.impl.PolicyBuilderImpl;
-import my.test.rest.incomings.eureka.controllers.AuthenticationController;
-import my.test.rest.incomings.eureka.controllers.dto.Authentication;
-import my.test.rest.incomings.eureka.controllers.dto.Token;
-import my.test.rest.incomings.eureka.rules.AuthFactory;
-import my.test.rest.incomings.eureka.rules.AuthFactoryImpl;
+import my.test.authorization.domain.api.impl.PolicyBuilderImpl;
+import my.test.authorization.store.UserMockBuilderImpl;
+import my.test.rest.incomings.controllers.AuthenticationController;
+import my.test.rest.incomings.controllers.api.dto.Authentication;
+import my.test.rest.incomings.controllers.api.dto.Token;
+import my.test.authorization.rules.AuthFactory;
+import my.test.authorization.rules.AuthFactoryImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.CommandLineRunner;

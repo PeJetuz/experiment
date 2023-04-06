@@ -156,8 +156,14 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.9</version>
+                <configuration>
+                    <excludes>
+                        <exclude>my/test/rest/incomings/controllers/api/**</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
+                        <id>default-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
@@ -168,6 +174,46 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>default-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>INSTRUCTION</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>1.0</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>CLASS</counter>
+                                            <value>MISSEDCOUNT</value>
+                                            <maximum>0</maximum>
+                                        </limit>
+                                        <limit>
+                                            <counter>METHOD</counter>
+                                            <value>MISSEDCOUNT</value>
+                                            <maximum>0</maximum>
+                                        </limit>
+                                        <limit>
+                                            <counter>COMPLEXITY</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>1.0</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>1.0</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -194,9 +240,9 @@
                             <inputSpec>${project.basedir}/src/main/resources/oas/Authentications.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <generateApiDocumentation>false</generateApiDocumentation>
-                            <apiPackage>my.test.rest.incomings.eureka.controllers.api</apiPackage>
+                            <apiPackage>my.test.rest.incomings.controllers.api</apiPackage>
                             <generateModelDocumentation>false</generateModelDocumentation>
-                            <modelPackage>my.test.rest.incomings.eureka.controllers.dto</modelPackage>
+                            <modelPackage>my.test.rest.incomings.controllers.api.dto</modelPackage>
                             <!--                <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>-->
                             <!--              <templateDirectory>${customOpenApiGeneratorTemplatesDirectory}</templateDirectory>-->
                             <typeMappings>
