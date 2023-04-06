@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 
-import static my.test.authorization.domain.api.api.LoginPolicy.GUEST;
-import static my.test.authorization.domain.api.api.LoginPolicy.GUEST_PASSWORD_HASH;
+import static my.test.authorization.domain.api.LoginPolicy.GUEST;
+import static my.test.authorization.domain.api.LoginPolicy.GUEST_PASSWORD_HASH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

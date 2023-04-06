@@ -1,7 +1,7 @@
 package my.test.authorization.store;
 
-import my.test.authorization.domain.api.api.store.User;
-import my.test.authorization.domain.api.api.store.UserBuilder;
+import my.test.authorization.domain.api.store.User;
+import my.test.authorization.domain.api.store.UserBuilder;
 
 
 public class UserMockBuilderImpl implements UserBuilder {

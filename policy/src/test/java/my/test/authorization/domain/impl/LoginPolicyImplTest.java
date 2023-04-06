@@ -1,15 +1,15 @@
-package my.test.authorization.domain.api.impl;
+package my.test.authorization.domain.impl;
 
 import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.function.Consumer;
-import my.test.authorization.domain.api.api.store.User;
-import my.test.authorization.domain.api.api.store.UserBuilder;
+import my.test.authorization.domain.api.store.User;
+import my.test.authorization.domain.api.store.UserBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static my.test.authorization.domain.api.api.LoginPolicy.GUEST;
-import static my.test.authorization.domain.api.api.LoginPolicy.GUEST_PASSWORD_HASH;
+import static my.test.authorization.domain.api.LoginPolicy.GUEST;
+import static my.test.authorization.domain.api.LoginPolicy.GUEST_PASSWORD_HASH;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;

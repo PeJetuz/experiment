@@ -1,9 +1,9 @@
-package my.test.authorization.domain.api.impl;
+package my.test.authorization.domain.impl;
 
-import my.test.authorization.domain.api.api.LoginPolicy;
-import my.test.authorization.domain.api.api.PolicyBuilder;
-import my.test.authorization.domain.api.api.CreatePolicy;
-import my.test.authorization.domain.api.api.store.UserBuilder;
+import my.test.authorization.domain.api.LoginPolicy;
+import my.test.authorization.domain.api.PolicyBuilder;
+import my.test.authorization.domain.api.CreatePolicy;
+import my.test.authorization.domain.api.store.UserBuilder;
 
 public class PolicyBuilderImpl implements PolicyBuilder {
 

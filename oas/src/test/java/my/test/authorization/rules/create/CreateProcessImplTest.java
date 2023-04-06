@@ -2,8 +2,8 @@ package my.test.authorization.rules.create;
 
 import java.util.Random;
 import java.util.function.Consumer;
-import my.test.authorization.domain.api.api.CreatePolicy;
-import my.test.authorization.domain.api.api.PolicyBuilder;
+import my.test.authorization.domain.api.CreatePolicy;
+import my.test.authorization.domain.api.PolicyBuilder;
 import my.test.authorization.rules.CreatePresenter;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

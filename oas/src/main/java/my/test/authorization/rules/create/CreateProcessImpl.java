@@ -1,7 +1,7 @@
 package my.test.authorization.rules.create;
 
-import my.test.authorization.domain.api.api.CreatePolicy;
-import my.test.authorization.domain.api.api.PolicyBuilder;
+import my.test.authorization.domain.api.CreatePolicy;
+import my.test.authorization.domain.api.PolicyBuilder;
 import my.test.authorization.rules.CreatePresenter;
 import my.test.authorization.rules.CreateProcess;
 

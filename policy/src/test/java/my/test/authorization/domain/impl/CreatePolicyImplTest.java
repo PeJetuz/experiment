@@ -1,7 +1,7 @@
-package my.test.authorization.domain.api.impl;
+package my.test.authorization.domain.impl;
 
-import my.test.authorization.domain.api.api.store.User;
-import my.test.authorization.domain.api.api.store.UserBuilder;
+import my.test.authorization.domain.api.store.User;
+import my.test.authorization.domain.api.store.UserBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;

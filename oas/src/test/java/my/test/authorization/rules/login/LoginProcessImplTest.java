@@ -2,8 +2,8 @@ package my.test.authorization.rules.login;
 
 import java.util.Random;
 import java.util.function.Consumer;
-import my.test.authorization.domain.api.api.LoginPolicy;
-import my.test.authorization.domain.api.api.PolicyBuilder;
+import my.test.authorization.domain.api.LoginPolicy;
+import my.test.authorization.domain.api.PolicyBuilder;
 import my.test.authorization.rules.LoginPresenter;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

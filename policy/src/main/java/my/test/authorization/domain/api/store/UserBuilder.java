@@ -1,4 +1,4 @@
-package my.test.authorization.domain.api.api.store;
+package my.test.authorization.domain.api.store;
 
 public interface UserBuilder {
 

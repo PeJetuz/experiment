@@ -1,7 +1,7 @@
 package my.test.authorization.rules.login;
 
-import my.test.authorization.domain.api.api.LoginPolicy;
-import my.test.authorization.domain.api.api.PolicyBuilder;
+import my.test.authorization.domain.api.LoginPolicy;
+import my.test.authorization.domain.api.PolicyBuilder;
 import my.test.authorization.rules.LoginPresenter;
 import my.test.authorization.rules.LoginProcess;
 

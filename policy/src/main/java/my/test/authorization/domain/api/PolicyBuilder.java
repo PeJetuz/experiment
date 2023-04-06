@@ -1,4 +1,4 @@
-package my.test.authorization.domain.api.api;
+package my.test.authorization.domain.api;
 
 public interface PolicyBuilder {
 

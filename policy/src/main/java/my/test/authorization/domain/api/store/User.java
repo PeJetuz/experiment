@@ -1,4 +1,4 @@
-package my.test.authorization.domain.api.api.store;
+package my.test.authorization.domain.api.store;
 
 import java.time.LocalDateTime;
 import java.util.function.Consumer;

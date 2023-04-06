@@ -1,9 +1,9 @@
-package my.test.authorization.domain.api.impl;
+package my.test.authorization.domain.impl;
 
-import my.test.authorization.domain.api.api.store.User;
-import my.test.authorization.domain.api.api.CreatePolicy;
-import my.test.authorization.domain.api.api.LoginPolicy;
-import my.test.authorization.domain.api.api.store.UserBuilder;
+import my.test.authorization.domain.api.store.User;
+import my.test.authorization.domain.api.CreatePolicy;
+import my.test.authorization.domain.api.LoginPolicy;
+import my.test.authorization.domain.api.store.UserBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

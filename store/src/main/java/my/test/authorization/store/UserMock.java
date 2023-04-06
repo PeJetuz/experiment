@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import my.test.authorization.domain.api.api.LoginPolicy;
-import my.test.authorization.domain.api.api.store.User;
+import my.test.authorization.domain.api.LoginPolicy;
+import my.test.authorization.domain.api.store.User;
 
 
 public class UserMock implements User {

@@ -1,6 +1,6 @@
 package my.test.authorization.rules;
 
-import my.test.authorization.domain.api.api.PolicyBuilder;
+import my.test.authorization.domain.api.PolicyBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

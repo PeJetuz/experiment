@@ -1,16 +1,26 @@
-package my.test.authorization.domain.api.api;
+package my.test.authorization.domain.api;
+
 
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
-public interface CreatePolicy {
+public interface LoginPolicy {
+
+    String GUEST = "Guest";
+    String GUEST_PASSWORD_HASH = "passwordHash";
 
     /**
-     * Create new user
-     *
-     * @return true if the user created successful
+     * It's implement business logic login process
      */
-    boolean createNewUser();
+    void loginUser();
+
+    /**
+     * check user login
+     *
+     * @return true if the user loaded successfully
+     */
+    boolean isLoginSuccess();
+
 
     /**
      * Write token and expiration time
