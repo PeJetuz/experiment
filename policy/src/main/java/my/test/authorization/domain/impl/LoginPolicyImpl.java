@@ -27,9 +27,9 @@ public class LoginPolicyImpl implements LoginPolicy {
         user.loadUser();
         if (user.isUserLoaded()) {
             if (isUserLoginExpired()) {
-                user.updateExpirationDateTimeAndToken(generateToken());
+                user.updateLastRefreshDateTimeAndToken(generateToken());
             } else {
-                user.updateExpirationDateTime();
+                user.updateLastRefreshDateTime();
             }
         }
     }
@@ -40,9 +40,9 @@ public class LoginPolicyImpl implements LoginPolicy {
     }
 
     @Override
-    public void writeTokenAndExpirationDateTime(Consumer<String> tokenConsumer,
-            Consumer<LocalDateTime> expirationDateTime) {
-        user.writeExpirationDateTime(expirationDateTime);
+    public void writeTokenAndLastRefreshDateTime(Consumer<String> tokenConsumer,
+            Consumer<LocalDateTime> lastRefreshDateTime) {
+        user.writeLastRefreshDateTime(lastRefreshDateTime);
         user.writeToken(tokenConsumer);
     }
 
@@ -51,6 +51,6 @@ public class LoginPolicyImpl implements LoginPolicy {
     }
 
     private boolean isUserLoginExpired() {
-        return user.isExpirationDateTimeBefore(LocalDateTime.now().minusMinutes(EXPIRATION_INTERVAL));
+        return user.isLastRefreshDateTime(LocalDateTime.now().minusMinutes(EXPIRATION_INTERVAL));
     }
 }

@@ -2,6 +2,7 @@ package my.test.rest.incomings.controllers.presenters.create;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import my.test.rest.incomings.controllers.api.dto.Authentication;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class CreatePresenterModelImplTest {
 
     @Test
     public void writeToken() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "userName" + random.nextLong();
         String token = "token" + random.nextLong();
         CreatePresenterModelImpl subj = new CreatePresenterModelImpl(userName);
@@ -44,7 +45,7 @@ public class CreatePresenterModelImplTest {
 
     @Test
     public void writeExpirationDateTime() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "userName" + random.nextLong();
         LocalDateTime expirationDateTime = LocalDateTime.now();
         CreatePresenterModelImpl subj = new CreatePresenterModelImpl(userName);

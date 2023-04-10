@@ -2,6 +2,7 @@ package my.test.authorization.store;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import org.junit.jupiter.api.Test;
 
 import static my.test.authorization.domain.api.LoginPolicy.GUEST;
@@ -106,17 +107,17 @@ public class UserMockTest {
         UserMock user = new UserMock(name);
         LocalDateTimeConsumer localDateTimeConsumer = new LocalDateTimeConsumer();
         assertTrue(user.validatePasswordHash(passwordHash));
-        LocalDateTime expectedTime = user.updateExpirationDateTime();
+        LocalDateTime expectedTime = user.updateLastRefreshDateTime();
         Thread.sleep(1L);
-        LocalDateTime updateLastUpdateTime = user.updateExpirationDateTime();
-        user.writeExpirationDateTime(localDateTimeConsumer::setLocalDateTime);
+        LocalDateTime updateLastUpdateTime = user.updateLastRefreshDateTime();
+        user.writeLastRefreshDateTime(localDateTimeConsumer::setLocalDateTime);
         assertTrue(expectedTime.isBefore(updateLastUpdateTime));
         assertEquals(updateLastUpdateTime, localDateTimeConsumer.localDateTime);
     }
 
     @Test
     public void updateExpirationDateTimeAndToken() throws InterruptedException {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String name = "Vasya";
         String passwordHash = "passwordHash";
         String token1 = "" + random.nextLong();
@@ -124,11 +125,11 @@ public class UserMockTest {
         UserMock user = new UserMock(name);
         StringConsumer tokenConsumer = new StringConsumer();
         assertTrue(user.validatePasswordHash(passwordHash));
-        LocalDateTime expectedTime = user.updateExpirationDateTimeAndToken(token1);
+        LocalDateTime expectedTime = user.updateLastRefreshDateTimeAndToken(token1);
         user.writeToken(tokenConsumer::setString);
         assertEquals(token1, tokenConsumer.string);
         Thread.sleep(1L);
-        LocalDateTime updateLastUpdateTime = user.updateExpirationDateTimeAndToken(token2);
+        LocalDateTime updateLastUpdateTime = user.updateLastRefreshDateTimeAndToken(token2);
         user.writeToken(tokenConsumer::setString);
         assertEquals(token2, tokenConsumer.string);
         assertTrue(expectedTime.isBefore(updateLastUpdateTime));
@@ -139,10 +140,10 @@ public class UserMockTest {
         String name = "Vasya";
         UserMock user = new UserMock(name);
         LocalDateTimeConsumer localDateTimeConsumer = new LocalDateTimeConsumer();
-        user.writeExpirationDateTime(localDateTimeConsumer::setLocalDateTime);
+        user.writeLastRefreshDateTime(localDateTimeConsumer::setLocalDateTime);
         LocalDateTime expirationDateTime = localDateTimeConsumer.localDateTime;
-        assertTrue(user.isExpirationDateTimeBefore(expirationDateTime.plusNanos(1)));
-        assertFalse(user.isExpirationDateTimeBefore(expirationDateTime));
+        assertTrue(user.isLastRefreshDateTime(expirationDateTime.plusNanos(1)));
+        assertFalse(user.isLastRefreshDateTime(expirationDateTime));
     }
 
     private class StringConsumer {

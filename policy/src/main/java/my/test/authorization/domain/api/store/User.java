@@ -21,7 +21,7 @@ public interface User {
      *
      * @return - new time
      */
-    LocalDateTime updateExpirationDateTime();
+    LocalDateTime updateLastRefreshDateTime();
 
     /**
      * Check existing user
@@ -38,19 +38,19 @@ public interface User {
     /**
      * Write expiration date and time
      *
-     * @param expirationDateTime - consumer
+     * @param lastRefreshDateTime - consumer
      */
-    void writeExpirationDateTime(Consumer<LocalDateTime> expirationDateTime);
+    void writeLastRefreshDateTime(Consumer<LocalDateTime> lastRefreshDateTime);
 
     /**
      * Compare expiration date time with argument
      */
-    boolean isExpirationDateTimeBefore(LocalDateTime compareTo);
+    boolean isLastRefreshDateTime(LocalDateTime compareTo);
 
     /**
      * Update expiration date time and token
      */
-    LocalDateTime updateExpirationDateTimeAndToken(String token);
+    LocalDateTime updateLastRefreshDateTimeAndToken(String token);
 
     /**
      * Write token

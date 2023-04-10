@@ -23,7 +23,7 @@ public class CreateProcessImpl implements CreateProcess {
         if (isUserDataValid()) {
             boolean isUserCreated = policy.createNewUser();
             if (isUserCreated) {
-                policy.writeTokenAndExpirationDateTime(presenter::writeToken, presenter::writeExpirationDateTime);
+                policy.writeTokenAndLastRefreshDateTime(presenter::writeToken, presenter::writeExpirationDateTime);
             } else {
                 presenter.initUserAlreadyExistsResponseModel();
             }
@@ -34,6 +34,7 @@ public class CreateProcessImpl implements CreateProcess {
 
     /**
      * Validate user data and fill out error messages to the presenter if there is an error in the data
+     *
      * @return true if the user data is valid
      */
     protected boolean isUserDataValid() {
@@ -41,6 +42,7 @@ public class CreateProcessImpl implements CreateProcess {
     }
 
     interface UserFieldValidator {
+
         boolean validateUserFields();
     }
 

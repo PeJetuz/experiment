@@ -46,8 +46,8 @@ public class CreatePolicyImplTest {
         User user = Mockito.mock(User.class);
         when(userBuilder.createUser(null, null)).thenReturn(user);
         CreatePolicyImpl policy = new CreatePolicyImpl(userBuilder, null, null);
-        policy.writeTokenAndExpirationDateTime(null, null);
+        policy.writeTokenAndLastRefreshDateTime(null, null);
         verify(user).writeToken(null);
-        verify(user).writeExpirationDateTime(null);
+        verify(user).writeLastRefreshDateTime(null);
     }
 }

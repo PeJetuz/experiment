@@ -23,8 +23,9 @@ public class CreatePolicyImpl implements CreatePolicy {
     }
 
     @Override
-    public void writeTokenAndExpirationDateTime(Consumer<String> token, Consumer<LocalDateTime> expirationDateTime) {
-        user.writeExpirationDateTime(expirationDateTime);
+    public void writeTokenAndLastRefreshDateTime(Consumer<String> token,
+            Consumer<LocalDateTime> lastRefreshDateTime) {
+        user.writeLastRefreshDateTime(lastRefreshDateTime);
         user.writeToken(token);
     }
 }

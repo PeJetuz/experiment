@@ -2,6 +2,7 @@ package my.test.rest.incomings.controllers.presenters.login;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import my.test.rest.incomings.controllers.api.dto.Authentication;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,7 @@ public class LoginPresenterModelImplTest {
 
     @Test
     public void renderModelTest() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "username" + random.nextLong();
         String token = "token" + random.nextLong();
         LocalDateTime expirationDateTime = LocalDateTime.now();
@@ -30,7 +31,7 @@ public class LoginPresenterModelImplTest {
 
     @Test
     public void renderModelUserNotFoundTest() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "username" + random.nextLong();
         LoginPresenterModelImpl subj = new LoginPresenterModelImpl(userName);
         subj.initUserNotFoundResponseModel();

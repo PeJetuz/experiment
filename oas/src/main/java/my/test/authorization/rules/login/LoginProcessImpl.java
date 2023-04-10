@@ -20,7 +20,7 @@ public class LoginProcessImpl implements LoginProcess {
     public void login() {
         policy.loginUser();
         if (policy.isLoginSuccess()) {
-            policy.writeTokenAndExpirationDateTime(presenter::writeToken, presenter::writeExpirationDateTime);
+            policy.writeTokenAndLastRefreshDateTime(presenter::writeToken, presenter::writeExpirationDateTime);
         } else {
             presenter.initUserNotFoundResponseModel();
         }

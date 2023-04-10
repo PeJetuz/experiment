@@ -1,6 +1,7 @@
 package my.test.rest.incomings.controllers;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import my.test.rest.incomings.controllers.api.dto.AuthInfo;
 import my.test.rest.incomings.controllers.api.dto.Authentication;
 import my.test.rest.incomings.controllers.api.dto.TokenPair;
@@ -30,7 +31,7 @@ public class AuthenticationControllerTest {
 
     @Test
     public void loginBody() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "username" + random.nextLong();
         String passwordHash = "passwordHash" + random.nextLong();
         AuthInfo authInfo = new AuthInfo().userName(userName).passwordHash(passwordHash);
@@ -47,7 +48,7 @@ public class AuthenticationControllerTest {
 
     @Test
     public void loginUnauthorized() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "username" + random.nextLong();
         String passwordHash = "passwordHash" + random.nextLong();
         AuthInfo authInfo = new AuthInfo().userName(userName).passwordHash(passwordHash);
@@ -78,7 +79,7 @@ public class AuthenticationControllerTest {
 
     @Test
     public void createTest() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "username" + random.nextLong();
         String passwordHash = "passwordHash" + random.nextLong();
         AuthInfo authInfo = new AuthInfo().userName(userName).passwordHash(passwordHash);

@@ -62,22 +62,22 @@ public class UserMock implements User {
     }
 
     @Override
-    public LocalDateTime updateExpirationDateTime() {
+    public LocalDateTime updateLastRefreshDateTime() {
         Objects.requireNonNull(info);
         LocalDateTime currentTime = LocalDateTime.now();
         AuthInfoValue authInfoValue = store.get(info.name);
-        AuthInfoValue newAuthInfoValue = authInfoValue.updateExpirationDateTime(currentTime);
+        AuthInfoValue newAuthInfoValue = authInfoValue.updateLastRefreshDateTime(currentTime);
         store.put(info.name, newAuthInfoValue);
         info = newAuthInfoValue;
         return currentTime;
     }
 
     @Override
-    public LocalDateTime updateExpirationDateTimeAndToken(String token) {
+    public LocalDateTime updateLastRefreshDateTimeAndToken(String token) {
         Objects.requireNonNull(info);
         LocalDateTime currentTime = LocalDateTime.now();
         AuthInfoValue authInfoValue = store.get(info.name);
-        AuthInfoValue newAuthInfoValue = authInfoValue.updateExpirationDateTimeAndToken(currentTime, token);
+        AuthInfoValue newAuthInfoValue = authInfoValue.updateLastRefreshDateTimeAndToken(currentTime, token);
         store.put(info.name, newAuthInfoValue);
         info = newAuthInfoValue;
         return currentTime;
@@ -100,8 +100,8 @@ public class UserMock implements User {
 
 
     @Override
-    public void writeExpirationDateTime(Consumer<LocalDateTime> expirationDateTime) {
-        expirationDateTime.accept(info.expirationDateTime);
+    public void writeLastRefreshDateTime(Consumer<LocalDateTime> lastRefreshDateTime) {
+        lastRefreshDateTime.accept(info.lastRefreshDateTime);
     }
 
     @Override
@@ -110,29 +110,29 @@ public class UserMock implements User {
     }
 
     @Override
-    public boolean isExpirationDateTimeBefore(LocalDateTime compareTo) {
-        return info.expirationDateTime.isBefore(compareTo);
+    public boolean isLastRefreshDateTime(LocalDateTime compareTo) {
+        return info.lastRefreshDateTime.isBefore(compareTo);
     }
 
-    ///////////////////
-    //// for tests ////
-    ///////////////////
+    private record AuthInfoValue(String name, String passwordHash, LocalDateTime lastRefreshDateTime, String token) {
+
+        public AuthInfoValue updateLastRefreshDateTime(LocalDateTime lastRefreshDateTime) {
+            return new AuthInfoValue(this.name, this.passwordHash, lastRefreshDateTime, this.token);
+        }
+
+        public AuthInfoValue updateLastRefreshDateTimeAndToken(LocalDateTime lastRefreshDateTime, String token) {
+            return new AuthInfoValue(this.name, this.passwordHash, lastRefreshDateTime, token);
+        }
+    }
+
+    /////////////////////
+    //// for testing ////
+    /////////////////////
     protected String whatIsYourName() {
         return info.name;
     }
 
     protected String whatIsYourPasswordHash() {
         return info.passwordHash;
-    }
-
-    private record AuthInfoValue(String name, String passwordHash, LocalDateTime expirationDateTime, String token) {
-
-        public AuthInfoValue updateExpirationDateTime(LocalDateTime expirationDateTime) {
-            return new AuthInfoValue(this.name, this.passwordHash, expirationDateTime, this.token);
-        }
-
-        public AuthInfoValue updateExpirationDateTimeAndToken(LocalDateTime expirationDateTime, String token) {
-            return new AuthInfoValue(this.name, this.passwordHash, expirationDateTime, token);
-        }
     }
 }

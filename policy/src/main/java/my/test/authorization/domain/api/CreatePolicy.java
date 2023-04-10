@@ -16,7 +16,7 @@ public interface CreatePolicy {
      * Write token and expiration time
      *
      * @param token - token consumer
-     * @param expirationDateTime - expiration time consumer
+     * @param lastRefreshDateTime - login expiration time consumer
      */
-    void writeTokenAndExpirationDateTime(Consumer<String> token, Consumer<LocalDateTime> expirationDateTime);
+    void writeTokenAndLastRefreshDateTime(Consumer<String> token, Consumer<LocalDateTime> lastRefreshDateTime);
 }

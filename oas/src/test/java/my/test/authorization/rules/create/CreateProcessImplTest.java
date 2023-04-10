@@ -1,6 +1,7 @@
 package my.test.authorization.rules.create;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import my.test.authorization.domain.api.CreatePolicy;
 import my.test.authorization.domain.api.PolicyBuilder;
@@ -19,7 +20,7 @@ public class CreateProcessImplTest {
 
     @Test
     public void validateUserNameNull() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String passwordHash = "passwordHash" + random.nextLong();
         PolicyBuilder policyBuilder = Mockito.mock(PolicyBuilder.class);
         CreatePolicy policy = Mockito.mock(CreatePolicy.class);
@@ -32,7 +33,7 @@ public class CreateProcessImplTest {
 
     @Test
     public void validateUserNameEmpty() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String passwordHash = "passwordHash" + random.nextLong();
         PolicyBuilder policyBuilder = Mockito.mock(PolicyBuilder.class);
         CreatePolicy policy = Mockito.mock(CreatePolicy.class);
@@ -45,7 +46,7 @@ public class CreateProcessImplTest {
 
     @Test
     public void validateUserPasswordNull() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "userName" + random.nextLong();
         PolicyBuilder policyBuilder = Mockito.mock(PolicyBuilder.class);
         CreatePolicy policy = Mockito.mock(CreatePolicy.class);
@@ -58,7 +59,7 @@ public class CreateProcessImplTest {
 
     @Test
     public void validateUserPasswordEmpty() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "userName" + random.nextLong();
         PolicyBuilder policyBuilder = Mockito.mock(PolicyBuilder.class);
         CreatePolicy policy = Mockito.mock(CreatePolicy.class);
@@ -79,13 +80,13 @@ public class CreateProcessImplTest {
         CreateProcessImpl subj = new CreateProcessImpl(policyBuilder, presenter, null, null);
         subj.createNewUser();
         verify(policy, times(0)).createNewUser();
-        verify(policy, times(0)).writeTokenAndExpirationDateTime(any(), any());
+        verify(policy, times(0)).writeTokenAndLastRefreshDateTime(any(), any());
         verify(presenter, times(0)).initUserAlreadyExistsResponseModel();
     }
 
     @Test
     public void createUserFailed() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "userName" + random.nextLong();
         String passwordHash = "passwordHash" + random.nextLong();
         PolicyBuilder policyBuilder = Mockito.mock(PolicyBuilder.class);
@@ -95,13 +96,13 @@ public class CreateProcessImplTest {
         when(policy.createNewUser()).thenReturn(false);
         CreateProcessImpl subj = new CreateProcessImpl(policyBuilder, presenter, userName, passwordHash);
         subj.createNewUser();
-        verify(policy, times(0)).writeTokenAndExpirationDateTime(any(), any());
+        verify(policy, times(0)).writeTokenAndLastRefreshDateTime(any(), any());
         verify(presenter).initUserAlreadyExistsResponseModel();
     }
 
     @Test
     public void createUserSuccess() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "userName" + random.nextLong();
         String passwordHash = "passwordHash" + random.nextLong();
         PolicyBuilder policyBuilder = Mockito.mock(PolicyBuilder.class);
@@ -112,6 +113,6 @@ public class CreateProcessImplTest {
         CreateProcessImpl subj = new CreateProcessImpl(policyBuilder, presenter, userName, passwordHash);
         subj.createNewUser();
         verify(presenter, times(0)).initUserAlreadyExistsResponseModel();
-        verify(policy).writeTokenAndExpirationDateTime(isA(Consumer.class), isA(Consumer.class));
+        verify(policy).writeTokenAndLastRefreshDateTime(isA(Consumer.class), isA(Consumer.class));
     }
 }

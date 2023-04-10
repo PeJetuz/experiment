@@ -1,6 +1,7 @@
 package my.test.authorization.rules.login;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import my.test.authorization.domain.api.LoginPolicy;
 import my.test.authorization.domain.api.PolicyBuilder;
@@ -16,7 +17,7 @@ public class LoginProcessImplTest {
 
     @Test
     public void loginLoginSuccess() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "username" + random.nextLong();
         String passwordHash = "passwordHash" + random.nextLong();
         PolicyBuilder policyBuilder = Mockito.mock(PolicyBuilder.class);
@@ -28,12 +29,12 @@ public class LoginProcessImplTest {
         subj.login();
         verify(policy).loginUser();
         verify(policy).isLoginSuccess();
-        verify(policy).writeTokenAndExpirationDateTime(isA(Consumer.class), isA(Consumer.class));
+        verify(policy).writeTokenAndLastRefreshDateTime(isA(Consumer.class), isA(Consumer.class));
     }
 
     @Test
     public void loginLoginFailed() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "username" + random.nextLong();
         String passwordHash = "passwordHash" + random.nextLong();
         PolicyBuilder policyBuilder = Mockito.mock(PolicyBuilder.class);

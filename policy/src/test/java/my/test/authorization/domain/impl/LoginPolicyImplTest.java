@@ -2,6 +2,7 @@ package my.test.authorization.domain.impl;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import my.test.authorization.domain.api.store.User;
 import my.test.authorization.domain.api.store.UserBuilder;
@@ -38,7 +39,7 @@ public class LoginPolicyImplTest {
 
     @Test
     public void loginUserNotFound() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "username" + random.nextLong();
         String passwordHash = "passwordHash" + random.nextLong();
         UserBuilder builder = Mockito.mock(UserBuilder.class);
@@ -49,44 +50,44 @@ public class LoginPolicyImplTest {
         subj.loginUser();
         verify(user).loadUser();
         verify(user).isUserLoaded();
-        verify(user, times(0)).isExpirationDateTimeBefore(any());
-        verify(user, times(0)).updateExpirationDateTimeAndToken(any());
+        verify(user, times(0)).isLastRefreshDateTime(any());
+        verify(user, times(0)).updateLastRefreshDateTimeAndToken(any());
     }
 
     @Test
     public void loginExpired() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "username" + random.nextLong();
         String passwordHash = "passwordHash" + random.nextLong();
         UserBuilder builder = Mockito.mock(UserBuilder.class);
         User user = Mockito.mock(User.class);
         when(builder.createUser(userName, passwordHash)).thenReturn(user);
         when(user.isUserLoaded()).thenReturn(true);
-        when(user.isExpirationDateTimeBefore(isA(LocalDateTime.class))).thenReturn(true);
+        when(user.isLastRefreshDateTime(isA(LocalDateTime.class))).thenReturn(true);
         LoginPolicyImpl subj = new LoginPolicyImpl(builder, userName, passwordHash);
         subj.loginUser();
         verify(user).loadUser();
         verify(user).isUserLoaded();
-        verify(user).isExpirationDateTimeBefore(isA(LocalDateTime.class));
-        verify(user).updateExpirationDateTimeAndToken(isA(String.class));
+        verify(user).isLastRefreshDateTime(isA(LocalDateTime.class));
+        verify(user).updateLastRefreshDateTimeAndToken(isA(String.class));
     }
 
     @Test
     public void login() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         String userName = "username" + random.nextLong();
         String passwordHash = "passwordHash" + random.nextLong();
         UserBuilder builder = Mockito.mock(UserBuilder.class);
         User user = Mockito.mock(User.class);
         when(builder.createUser(userName, passwordHash)).thenReturn(user);
         when(user.isUserLoaded()).thenReturn(true);
-        when(user.isExpirationDateTimeBefore(isA(LocalDateTime.class))).thenReturn(false);
+        when(user.isLastRefreshDateTime(isA(LocalDateTime.class))).thenReturn(false);
         LoginPolicyImpl subj = new LoginPolicyImpl(builder, userName, passwordHash);
         subj.loginUser();
         verify(user).loadUser();
         verify(user).isUserLoaded();
-        verify(user).isExpirationDateTimeBefore(isA(LocalDateTime.class));
-        verify(user).updateExpirationDateTime();
+        verify(user).isLastRefreshDateTime(isA(LocalDateTime.class));
+        verify(user).updateLastRefreshDateTime();
     }
 
     @Test
@@ -95,13 +96,13 @@ public class LoginPolicyImplTest {
         User user = Mockito.mock(User.class);
         when(builder.createUser(GUEST, GUEST_PASSWORD_HASH)).thenReturn(user);
         when(user.isUserLoaded()).thenReturn(true);
-        when(user.isExpirationDateTimeBefore(isA(LocalDateTime.class))).thenReturn(false);
+        when(user.isLastRefreshDateTime(isA(LocalDateTime.class))).thenReturn(false);
         LoginPolicyImpl subj = new LoginPolicyImpl(builder, GUEST, GUEST_PASSWORD_HASH);
         subj.loginUser();
         verify(user).loadUser();
         verify(user).isUserLoaded();
-        verify(user).isExpirationDateTimeBefore(isA(LocalDateTime.class));
-        verify(user).updateExpirationDateTime();
+        verify(user).isLastRefreshDateTime(isA(LocalDateTime.class));
+        verify(user).updateLastRefreshDateTime();
     }
 
     @Test
@@ -115,13 +116,13 @@ public class LoginPolicyImplTest {
     }
 
     @Test
-    public void writeTokenAndExpirationDateTime() {
+    public void writeTokenAndLastRefreshDateTime() {
         class Internal {
 
             public void setToken(String token) {
             }
 
-            public void setExpirationDateTime(LocalDateTime expirationDateTime) {
+            public void setLastRefreshDateTime(LocalDateTime lastRefreshDateTime) {
             }
         }
         UserBuilder builder = Mockito.mock(UserBuilder.class);
@@ -129,8 +130,8 @@ public class LoginPolicyImplTest {
         when(builder.createUser(GUEST, GUEST_PASSWORD_HASH)).thenReturn(user);
         LoginPolicyImpl subj = new LoginPolicyImpl(builder, null, null);
         Internal internal = new Internal();
-        subj.writeTokenAndExpirationDateTime(internal::setToken, internal::setExpirationDateTime);
-        verify(user).writeExpirationDateTime(any(Consumer.class));
+        subj.writeTokenAndLastRefreshDateTime(internal::setToken, internal::setLastRefreshDateTime);
+        verify(user).writeLastRefreshDateTime(any(Consumer.class));
         verify(user).writeToken(any(Consumer.class));
     }
 }
