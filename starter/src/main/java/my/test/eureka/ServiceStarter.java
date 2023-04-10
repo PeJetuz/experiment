@@ -2,6 +2,7 @@ package my.test.eureka;
 
 import java.util.Arrays;
 import my.test.authorization.domain.impl.PolicyBuilderImpl;
+import my.test.authorization.servicebus.LoginEventTransmitterBuilderImpl;
 import my.test.authorization.store.UserMockBuilderImpl;
 import my.test.rest.incomings.controllers.AuthenticationController;
 import my.test.rest.incomings.controllers.api.dto.Authentication;
@@ -52,7 +53,8 @@ public class ServiceStarter {
 //	}
     @Bean
     public AuthFactory authBuilder() {
-        return new AuthFactoryImpl(new PolicyBuilderImpl(new UserMockBuilderImpl()));
+        return new AuthFactoryImpl(
+                new PolicyBuilderImpl(new UserMockBuilderImpl(), new LoginEventTransmitterBuilderImpl()));
     }
 
     //@Bean

@@ -1,5 +1,6 @@
 package my.test.authorization.domain.impl;
 
+import my.test.authorization.domain.api.servicebus.LoginEventTransmitterBuilder;
 import my.test.authorization.domain.api.store.User;
 import my.test.authorization.domain.api.CreatePolicy;
 import my.test.authorization.domain.api.LoginPolicy;
@@ -16,8 +17,9 @@ public class PolicyBuilderImplTest {
     @Test
     public void buildLoginPolicyTest() {
         UserBuilder userBuilder = Mockito.mock(UserBuilder.class);
+        LoginEventTransmitterBuilder loginEventTransmitterBuilder = Mockito.mock(LoginEventTransmitterBuilder.class);
         when(userBuilder.createUser(null, null)).thenReturn(Mockito.mock(User.class));
-        PolicyBuilderImpl builder = new PolicyBuilderImpl(userBuilder);
+        PolicyBuilderImpl builder = new PolicyBuilderImpl(userBuilder, loginEventTransmitterBuilder);
         LoginPolicy loginPolicy = builder.buildLoginPolicy(null, null);
         assertNotNull(loginPolicy);
         assertTrue(loginPolicy instanceof LoginPolicyImpl);
@@ -26,8 +28,9 @@ public class PolicyBuilderImplTest {
     @Test
     public void buildCreatePolicyTest() {
         UserBuilder userBuilder = Mockito.mock(UserBuilder.class);
+        LoginEventTransmitterBuilder loginEventTransmitterBuilder = Mockito.mock(LoginEventTransmitterBuilder.class);
         when(userBuilder.createUser(null, null)).thenReturn(Mockito.mock(User.class));
-        PolicyBuilderImpl builder = new PolicyBuilderImpl(userBuilder);
+        PolicyBuilderImpl builder = new PolicyBuilderImpl(userBuilder, loginEventTransmitterBuilder);
         CreatePolicy createPolicy = builder.buildCreatePolicy(null, null);
         assertNotNull(createPolicy);
         assertTrue(createPolicy instanceof CreatePolicy);

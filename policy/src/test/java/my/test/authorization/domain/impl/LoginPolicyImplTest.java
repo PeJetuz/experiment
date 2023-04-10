@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
+import my.test.authorization.domain.api.servicebus.LoginEventTransmitter;
+import my.test.authorization.domain.api.servicebus.LoginEventTransmitterBuilder;
 import my.test.authorization.domain.api.store.User;
 import my.test.authorization.domain.api.store.UserBuilder;
 import org.junit.jupiter.api.Test;
@@ -23,8 +25,9 @@ public class LoginPolicyImplTest {
     public void createGuestNullNameCtorTest() {
         UserBuilder builder = Mockito.mock(UserBuilder.class);
         User user = Mockito.mock(User.class);
+        LoginEventTransmitterBuilder loginEventTransmitterBuilder = Mockito.mock(LoginEventTransmitterBuilder.class);
         when(builder.createUser(GUEST, GUEST_PASSWORD_HASH)).thenReturn(user);
-        new LoginPolicyImpl(builder, null, null);
+        new LoginPolicyImpl(builder, null, null, loginEventTransmitterBuilder);
         verify(builder).createUser(GUEST, GUEST_PASSWORD_HASH);
     }
 
@@ -32,8 +35,9 @@ public class LoginPolicyImplTest {
     public void createGuestEmptyNameCtorTest() {
         UserBuilder builder = Mockito.mock(UserBuilder.class);
         User user = Mockito.mock(User.class);
+        LoginEventTransmitterBuilder loginEventTransmitterBuilder = Mockito.mock(LoginEventTransmitterBuilder.class);
         when(builder.createUser(GUEST, GUEST_PASSWORD_HASH)).thenReturn(user);
-        new LoginPolicyImpl(builder, "", null);
+        new LoginPolicyImpl(builder, "", null, loginEventTransmitterBuilder);
         verify(builder).createUser(GUEST, GUEST_PASSWORD_HASH);
     }
 
@@ -44,9 +48,10 @@ public class LoginPolicyImplTest {
         String passwordHash = "passwordHash" + random.nextLong();
         UserBuilder builder = Mockito.mock(UserBuilder.class);
         User user = Mockito.mock(User.class);
+        LoginEventTransmitterBuilder loginEventTransmitterBuilder = Mockito.mock(LoginEventTransmitterBuilder.class);
         when(builder.createUser(userName, passwordHash)).thenReturn(user);
         when(user.isUserLoaded()).thenReturn(false);
-        LoginPolicyImpl subj = new LoginPolicyImpl(builder, userName, passwordHash);
+        LoginPolicyImpl subj = new LoginPolicyImpl(builder, userName, passwordHash, loginEventTransmitterBuilder);
         subj.loginUser();
         verify(user).loadUser();
         verify(user).isUserLoaded();
@@ -61,10 +66,11 @@ public class LoginPolicyImplTest {
         String passwordHash = "passwordHash" + random.nextLong();
         UserBuilder builder = Mockito.mock(UserBuilder.class);
         User user = Mockito.mock(User.class);
+        LoginEventTransmitterBuilder loginEventTransmitterBuilder = Mockito.mock(LoginEventTransmitterBuilder.class);
         when(builder.createUser(userName, passwordHash)).thenReturn(user);
         when(user.isUserLoaded()).thenReturn(true);
         when(user.isLastRefreshDateTime(isA(LocalDateTime.class))).thenReturn(true);
-        LoginPolicyImpl subj = new LoginPolicyImpl(builder, userName, passwordHash);
+        LoginPolicyImpl subj = new LoginPolicyImpl(builder, userName, passwordHash, loginEventTransmitterBuilder);
         subj.loginUser();
         verify(user).loadUser();
         verify(user).isUserLoaded();
@@ -79,38 +85,47 @@ public class LoginPolicyImplTest {
         String passwordHash = "passwordHash" + random.nextLong();
         UserBuilder builder = Mockito.mock(UserBuilder.class);
         User user = Mockito.mock(User.class);
+        LoginEventTransmitterBuilder loginEventTransmitterBuilder = Mockito.mock(LoginEventTransmitterBuilder.class);
+        LoginEventTransmitter loginEventTransmitter = Mockito.mock(LoginEventTransmitter.class);
+        when(loginEventTransmitterBuilder.createLoginEventTransmitter(userName)).thenReturn(loginEventTransmitter);
         when(builder.createUser(userName, passwordHash)).thenReturn(user);
         when(user.isUserLoaded()).thenReturn(true);
         when(user.isLastRefreshDateTime(isA(LocalDateTime.class))).thenReturn(false);
-        LoginPolicyImpl subj = new LoginPolicyImpl(builder, userName, passwordHash);
+        LoginPolicyImpl subj = new LoginPolicyImpl(builder, userName, passwordHash, loginEventTransmitterBuilder);
         subj.loginUser();
         verify(user).loadUser();
         verify(user).isUserLoaded();
         verify(user).isLastRefreshDateTime(isA(LocalDateTime.class));
         verify(user).updateLastRefreshDateTime();
+        verify(loginEventTransmitter).sendUserLoginEvent();
     }
 
     @Test
     public void loginGuest() {
         UserBuilder builder = Mockito.mock(UserBuilder.class);
         User user = Mockito.mock(User.class);
+        LoginEventTransmitterBuilder loginEventTransmitterBuilder = Mockito.mock(LoginEventTransmitterBuilder.class);
+        LoginEventTransmitter loginEventTransmitter = Mockito.mock(LoginEventTransmitter.class);
+        when(loginEventTransmitterBuilder.createLoginEventTransmitter(GUEST)).thenReturn(loginEventTransmitter);
         when(builder.createUser(GUEST, GUEST_PASSWORD_HASH)).thenReturn(user);
         when(user.isUserLoaded()).thenReturn(true);
         when(user.isLastRefreshDateTime(isA(LocalDateTime.class))).thenReturn(false);
-        LoginPolicyImpl subj = new LoginPolicyImpl(builder, GUEST, GUEST_PASSWORD_HASH);
+        LoginPolicyImpl subj = new LoginPolicyImpl(builder, GUEST, GUEST_PASSWORD_HASH, loginEventTransmitterBuilder);
         subj.loginUser();
         verify(user).loadUser();
         verify(user).isUserLoaded();
         verify(user).isLastRefreshDateTime(isA(LocalDateTime.class));
         verify(user).updateLastRefreshDateTime();
+        verify(loginEventTransmitter).sendUserLoginEvent();
     }
 
     @Test
     public void isLoginGuestSuccess() {
         UserBuilder builder = Mockito.mock(UserBuilder.class);
         User user = Mockito.mock(User.class);
+        LoginEventTransmitterBuilder loginEventTransmitterBuilder = Mockito.mock(LoginEventTransmitterBuilder.class);
         when(builder.createUser(GUEST, GUEST_PASSWORD_HASH)).thenReturn(user);
-        LoginPolicyImpl subj = new LoginPolicyImpl(builder, null, null);
+        LoginPolicyImpl subj = new LoginPolicyImpl(builder, null, null, loginEventTransmitterBuilder);
         subj.isLoginSuccess();
         verify(user).isUserLoaded();
     }
@@ -127,8 +142,9 @@ public class LoginPolicyImplTest {
         }
         UserBuilder builder = Mockito.mock(UserBuilder.class);
         User user = Mockito.mock(User.class);
+        LoginEventTransmitterBuilder loginEventTransmitterBuilder = Mockito.mock(LoginEventTransmitterBuilder.class);
         when(builder.createUser(GUEST, GUEST_PASSWORD_HASH)).thenReturn(user);
-        LoginPolicyImpl subj = new LoginPolicyImpl(builder, null, null);
+        LoginPolicyImpl subj = new LoginPolicyImpl(builder, null, null, loginEventTransmitterBuilder);
         Internal internal = new Internal();
         subj.writeTokenAndLastRefreshDateTime(internal::setToken, internal::setLastRefreshDateTime);
         verify(user).writeLastRefreshDateTime(any(Consumer.class));
