@@ -16,8 +16,8 @@ public class LoginPolicyImpl implements LoginPolicy {
 
     public LoginPolicyImpl(UserBuilder userBuilder, String userName, String passwordHash) {
         if (userName == null || userName.isBlank()) {
-            userName = GUEST;
-            passwordHash = GUEST_PASSWORD_HASH;
+            userName = User.GUEST;
+            passwordHash = User.GUEST_PASSWORD_HASH;
         }
         this.user = userBuilder.createUser(userName, passwordHash);
     }

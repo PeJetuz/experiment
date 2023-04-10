@@ -9,8 +9,8 @@ import my.test.authorization.domain.api.store.UserBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static my.test.authorization.domain.api.LoginPolicy.GUEST;
-import static my.test.authorization.domain.api.LoginPolicy.GUEST_PASSWORD_HASH;
+import static my.test.authorization.domain.api.store.User.GUEST;
+import static my.test.authorization.domain.api.store.User.GUEST_PASSWORD_HASH;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;

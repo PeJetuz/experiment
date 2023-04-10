@@ -4,10 +4,11 @@ package my.test.authorization.domain.api;
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
+/**
+ * Interface for login user
+ */
 public interface LoginPolicy {
 
-    String GUEST = "Guest";
-    String GUEST_PASSWORD_HASH = "passwordHash";
 
     /**
      * It's implement business logic login process

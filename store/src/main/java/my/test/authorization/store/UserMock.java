@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import my.test.authorization.domain.api.LoginPolicy;
 import my.test.authorization.domain.api.store.User;
 
 
@@ -13,7 +12,7 @@ public class UserMock implements User {
 
     private static final Map<String, AuthInfoValue> store;
     private static final AuthInfoValue GUEST_INFO_VALUE =
-            new AuthInfoValue(LoginPolicy.GUEST, LoginPolicy.GUEST_PASSWORD_HASH, LocalDateTime.now(), null);
+            new AuthInfoValue(GUEST, GUEST_PASSWORD_HASH, LocalDateTime.now(), null);
 
     private AuthInfoValue info;
     private final String name;
@@ -23,7 +22,7 @@ public class UserMock implements User {
     static {
         store = new ConcurrentHashMap<>();
         store.put("Vasya", new AuthInfoValue("Vasya", "passwordHash", LocalDateTime.now(), null));
-        store.put(LoginPolicy.GUEST, GUEST_INFO_VALUE);
+        store.put(GUEST, GUEST_INFO_VALUE);
     }
 
     public UserMock(String userName) {

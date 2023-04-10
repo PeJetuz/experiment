@@ -3,7 +3,13 @@ package my.test.authorization.domain.api.store;
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
+/**
+ * Interface for load and update user information
+ */
 public interface User {
+
+    String GUEST = "Guest";
+    String GUEST_PASSWORD_HASH = "passwordHash";
 
     /**
      * Validate password hash when user load without password

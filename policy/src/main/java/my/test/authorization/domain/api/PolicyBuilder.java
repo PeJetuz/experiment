@@ -3,17 +3,17 @@ package my.test.authorization.domain.api;
 public interface PolicyBuilder {
 
     /**
-     * Create policy implementation
+     * Create policy instance
      *
-     * @param userName - user name
+     * @param userName - name of user
      * @param passwordHash - password hash
      */
     LoginPolicy buildLoginPolicy(String userName, String passwordHash);
 
     /**
-     * Create policy implementation
+     * Create policy instance
      *
-     * @param userName - user name
+     * @param userName - name of user
      * @param passwordHash - password hash
      */
     CreatePolicy buildCreatePolicy(String userName, String passwordHash);
