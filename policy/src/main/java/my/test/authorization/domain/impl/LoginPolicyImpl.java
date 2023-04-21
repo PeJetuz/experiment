@@ -3,41 +3,50 @@ package my.test.authorization.domain.impl;
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
 import my.test.authorization.domain.api.LoginPolicy;
-import my.test.authorization.domain.api.servicebus.LoginEventTransmitter;
-import my.test.authorization.domain.api.servicebus.LoginEventTransmitterBuilder;
-import my.test.authorization.domain.api.store.User;
+import my.test.authorization.domain.api.servicebus.LogonEventTransmitter;
+import my.test.authorization.domain.api.servicebus.LogonEventTransmitterBuilder;
+import my.test.authorization.domain.api.store.LoginUser;
 import my.test.authorization.domain.api.store.UserBuilder;
 
 public class LoginPolicyImpl implements LoginPolicy {
 
-    /**
-     * Expiration time in minutes
-     */
-    private static final int EXPIRATION_INTERVAL = 10;
-    private final User user;
-    private final LoginEventTransmitter loginEventTransmitter;
+    private static final int SESSION_EXPIRATION_INTERVAL = 10;
+    private final LoginUser user;
+    private final LogonEventTransmitter logonEventTransmitter;
 
     public LoginPolicyImpl(UserBuilder userBuilder, String userName, String passwordHash,
-            LoginEventTransmitterBuilder loginEventTransmitterBuilder) {
+            LogonEventTransmitterBuilder logonEventTransmitterBuilder) {
         if (userName == null || userName.isBlank()) {
-            userName = User.GUEST;
-            passwordHash = User.GUEST_PASSWORD_HASH;
+            this.user = userBuilder.createGuestUser();
+        } else {
+            this.user = userBuilder.createLoginUser(userName, passwordHash);
         }
-        this.user = userBuilder.createUser(userName, passwordHash);
-        this.loginEventTransmitter = loginEventTransmitterBuilder.createLoginEventTransmitter(userName);
+        this.logonEventTransmitter = logonEventTransmitterBuilder.createLoginEventTransmitter(userName);
     }
 
     @Override
     public void loginUser() {
         user.loadUser();
         if (user.isUserLoaded()) {
-            if (isUserLoginExpired()) {
-                user.updateLastRefreshDateTimeAndToken(generateToken());
-            } else {
-                user.updateLastRefreshDateTime();
-                loginEventTransmitter.sendUserLoginEvent();
-            }
+            updateUserAndSendLogonEvent();
         }
+    }
+
+    private void updateUserAndSendLogonEvent() {
+        if (isUserLoginExpired()) {
+            user.updateLastRefreshDateTimeAndToken(generateToken());
+        } else {
+            user.updateLastRefreshDateTime();
+            user.writeToken(logonEventTransmitter::sendUserLogonEvent);
+        }
+    }
+
+    private boolean isUserLoginExpired() {
+        return user.isLastRefreshDateTimeBefore(LocalDateTime.now().minusMinutes(SESSION_EXPIRATION_INTERVAL));
+    }
+
+    private String generateToken() {
+        return "" + LocalDateTime.now();
     }
 
     @Override
@@ -50,13 +59,5 @@ public class LoginPolicyImpl implements LoginPolicy {
             Consumer<LocalDateTime> lastRefreshDateTime) {
         user.writeLastRefreshDateTime(lastRefreshDateTime);
         user.writeToken(tokenConsumer);
-    }
-
-    private String generateToken() {
-        return "" + LocalDateTime.now();
-    }
-
-    private boolean isUserLoginExpired() {
-        return user.isLastRefreshDateTime(LocalDateTime.now().minusMinutes(EXPIRATION_INTERVAL));
     }
 }

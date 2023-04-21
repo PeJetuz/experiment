@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>my.test.eureka</groupId>
-            <artifactId>store</artifactId>
+            <artifactId>user-store</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

@@ -5,13 +5,13 @@ import java.util.concurrent.ThreadLocalRandom;
 import my.test.rest.incomings.controllers.api.dto.AuthInfo;
 import my.test.rest.incomings.controllers.api.dto.Authentication;
 import my.test.rest.incomings.controllers.api.dto.TokenPair;
-import my.test.rest.incomings.controllers.presenters.create.CreatePresenterModel;
-import my.test.rest.incomings.controllers.presenters.login.LoginPresenterModel;
+import my.test.rest.incomings.controllers.presenters.create.NewUserPresenterModel;
+import my.test.rest.incomings.controllers.presenters.login.LoginUserPresenterModel;
 import my.test.authorization.rules.AuthFactory;
-import my.test.authorization.rules.CreatePresenter;
-import my.test.authorization.rules.CreateProcess;
-import my.test.authorization.rules.LoginPresenter;
-import my.test.authorization.rules.LoginProcess;
+import my.test.authorization.rules.NewUserPresenter;
+import my.test.authorization.rules.NewUserInteractor;
+import my.test.authorization.rules.LoginUserPresenter;
+import my.test.authorization.rules.LoginUserInteractor;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -29,86 +29,118 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class AuthenticationControllerTest {
 
+    private AuthFactory authFactory = Mockito.mock(AuthFactory.class);
+    private AuthenticationController controller = new AuthenticationController(authFactory);
+    private Random random = ThreadLocalRandom.current();
+    private String userName = "username" + random.nextLong();
+    private String passwordHash = "passwordHash" + random.nextLong();
+
     @Test
-    public void loginBody() {
-        Random random = ThreadLocalRandom.current();
-        String userName = "username" + random.nextLong();
-        String passwordHash = "passwordHash" + random.nextLong();
-        AuthInfo authInfo = new AuthInfo().userName(userName).passwordHash(passwordHash);
-        LoginProcess loginProcess = Mockito.mock(LoginProcess.class);
-        AuthFactory authFactory = Mockito.mock(AuthFactory.class);
-        when(authFactory.createLoginProcess(isA(LoginPresenter.class), eq(userName), eq(passwordHash)))
-                .thenReturn(loginProcess);
-        AuthenticationController controller = new AuthenticationController(authFactory);
+    public void checkLoginStatusCodeOk() {
+        AuthInfo authInfo = buildAuthInfoForCheckLoginOk();
+
         ResponseEntity<Authentication> result = controller.login(authInfo);
+
         assertEquals(OK, result.getStatusCode());
+    }
+
+    @Test
+    public void checkUsernameLoginResponse() {
+        AuthInfo authInfo = buildAuthInfoForCheckLoginOk();
+
+        ResponseEntity<Authentication> result = controller.login(authInfo);
+
         Authentication body = result.getBody();
         assertEquals(userName, body.getUsername());
     }
 
+    private AuthInfo buildAuthInfoForCheckLoginOk() {
+        LoginUserInteractor loginUserInteractor = Mockito.mock(LoginUserInteractor.class);
+        when(authFactory.createLoginUserInteractor(isA(LoginUserPresenter.class), eq(userName), eq(passwordHash)))
+                .thenReturn(loginUserInteractor);
+        return new AuthInfo().userName(userName).passwordHash(passwordHash);
+    }
+
     @Test
-    public void loginUnauthorized() {
-        Random random = ThreadLocalRandom.current();
-        String userName = "username" + random.nextLong();
-        String passwordHash = "passwordHash" + random.nextLong();
-        AuthInfo authInfo = new AuthInfo().userName(userName).passwordHash(passwordHash);
-        AuthFactory authFactory = Mockito.mock(AuthFactory.class);
-        ArgumentCaptor<LoginPresenterModel> presenterModel = ArgumentCaptor.forClass(LoginPresenterModel.class);
-        LoginProcess loginProcess = () -> presenterModel.getValue().initUserNotFoundResponseModel();
-        when(authFactory.createLoginProcess(presenterModel.capture(), eq(userName), eq(passwordHash)))
-                .thenReturn(loginProcess);
-        AuthenticationController controller = new AuthenticationController(authFactory);
+    public void checkUnauthorizedLogin() {
+        AuthInfo authInfo = buildAuthInfoForCheckUnauthorizedLogin();
+
         ResponseEntity<Authentication> result = controller.login(authInfo);
+
         assertEquals(UNAUTHORIZED, result.getStatusCode());
     }
 
-    @Test
-    public void createTestFailed() {
-        AuthInfo authInfo = new AuthInfo().userName(null).passwordHash(null);
-        AuthFactory authFactory = Mockito.mock(AuthFactory.class);
-        ArgumentCaptor<CreatePresenterModel> presenterModel = ArgumentCaptor.forClass(CreatePresenterModel.class);
-        CreateProcess createProcess = () -> {
-            presenterModel.getValue().initUserAlreadyExistsResponseModel();
-            return false;
-        };
-        when(authFactory.createNewUserProcess(presenterModel.capture(), eq(null), eq(null))).thenReturn(createProcess);
-        AuthenticationController controller = new AuthenticationController(authFactory);
-        ResponseEntity<Authentication> result = controller.create(authInfo);
-        assertEquals(FORBIDDEN, result.getStatusCode());
+    private AuthInfo buildAuthInfoForCheckUnauthorizedLogin() {
+        ArgumentCaptor<LoginUserPresenterModel> presenterModel = ArgumentCaptor.forClass(LoginUserPresenterModel.class);
+        LoginUserInteractor loginUserInteractor = () -> presenterModel.getValue().initUserNotFoundResponseModel();
+        when(authFactory.createLoginUserInteractor(presenterModel.capture(), eq(userName), eq(passwordHash)))
+                .thenReturn(loginUserInteractor);
+        return new AuthInfo().userName(userName).passwordHash(passwordHash);
     }
 
     @Test
-    public void createTest() {
-        Random random = ThreadLocalRandom.current();
-        String userName = "username" + random.nextLong();
-        String passwordHash = "passwordHash" + random.nextLong();
-        AuthInfo authInfo = new AuthInfo().userName(userName).passwordHash(passwordHash);
-        CreateProcess createProcess = Mockito.mock(CreateProcess.class);
-        AuthFactory authFactory = Mockito.mock(AuthFactory.class);
-        when(authFactory.createNewUserProcess(isA(CreatePresenter.class), eq(userName), eq(passwordHash))).thenReturn(
-                createProcess);
-        when(createProcess.createNewUser()).thenReturn(true);
-        AuthenticationController controller = new AuthenticationController(authFactory);
+    public void checkCreateAlreadyExistingUser() {
+        AuthInfo authInfo = buildAuthInfoForAlreadyExistingUser();
+
         ResponseEntity<Authentication> result = controller.create(authInfo);
-        verify(createProcess).createNewUser();
+
+        assertEquals(FORBIDDEN, result.getStatusCode());
+    }
+
+    private AuthInfo buildAuthInfoForAlreadyExistingUser() {
+        AuthInfo authInfo = new AuthInfo().userName(null).passwordHash(null);
+        ArgumentCaptor<NewUserPresenterModel> presenterModel = ArgumentCaptor.forClass(NewUserPresenterModel.class);
+        NewUserInteractor newUserInteractor = () -> {
+            presenterModel.getValue().initUserAlreadyExistsResponseModel();
+            return false;
+        };
+        when(authFactory.createNewUserProcess(presenterModel.capture(), eq(null), eq(null))).thenReturn(
+                newUserInteractor);
+        return authInfo;
+    }
+
+    @Test
+    public void checkStatusCodeOkForCreatingUser() {
+        NewUserInteractor newUserInteractor = Mockito.mock(NewUserInteractor.class);
+        AuthInfo authInfo = buildAuthInfoForCreatingUserOk(newUserInteractor);
+
+        ResponseEntity<Authentication> result = controller.create(authInfo);
+
+        verify(newUserInteractor).createNewUser();
         assertEquals(OK, result.getStatusCode());
+    }
+
+    @Test
+    public void checkResponseUserNameForCreatingUser() {
+        NewUserInteractor newUserInteractor = Mockito.mock(NewUserInteractor.class);
+        AuthInfo authInfo = buildAuthInfoForCreatingUserOk(newUserInteractor);
+
+        ResponseEntity<Authentication> result = controller.create(authInfo);
+
+        verify(newUserInteractor).createNewUser();
         Authentication body = result.getBody();
         assertEquals(userName, body.getUsername());
+    }
+
+    private AuthInfo buildAuthInfoForCreatingUserOk(NewUserInteractor newUserInteractor) {
+        AuthInfo authInfo = new AuthInfo().userName(userName).passwordHash(passwordHash);
+        when(authFactory.createNewUserProcess(isA(NewUserPresenter.class), eq(userName), eq(passwordHash))).thenReturn(
+                newUserInteractor);
+        when(newUserInteractor.createNewUser()).thenReturn(true);
+        return authInfo;
     }
 
     @Test
     public void logout() {
-        AuthFactory authFactory = Mockito.mock(AuthFactory.class);
-        AuthenticationController controller = new AuthenticationController(authFactory);
         ResponseEntity<Void> result = controller.logout();
+
         assertNotNull(result);
     }
 
     @Test
     public void refreshTokens() {
-        AuthFactory authFactory = Mockito.mock(AuthFactory.class);
-        AuthenticationController controller = new AuthenticationController(authFactory);
         ResponseEntity<TokenPair> result = controller.refreshTokens();
+
         assertNotNull(result);
     }
 }

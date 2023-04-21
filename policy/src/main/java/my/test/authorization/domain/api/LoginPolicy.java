@@ -10,24 +10,10 @@ import java.util.function.Consumer;
 public interface LoginPolicy {
 
 
-    /**
-     * It's implement business logic login process
-     */
     void loginUser();
 
-    /**
-     * check user login
-     *
-     * @return true if the user loaded successfully
-     */
     boolean isLoginSuccess();
 
 
-    /**
-     * Write token and expiration time
-     *
-     * @param token - token consumer
-     * @param lastRefreshDateTime - expiration time consumer
-     */
     void writeTokenAndLastRefreshDateTime(Consumer<String> token, Consumer<LocalDateTime> lastRefreshDateTime);
 }

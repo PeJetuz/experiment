@@ -2,8 +2,9 @@ package my.test.eureka;
 
 import java.util.Arrays;
 import my.test.authorization.domain.impl.PolicyBuilderImpl;
-import my.test.authorization.servicebus.LoginEventTransmitterBuilderImpl;
+import my.test.authorization.servicebus.LogonEventTransmitterBuilderImpl;
 import my.test.authorization.store.UserMockBuilderImpl;
+import my.test.eureka.config.KafkaConfiguration;
 import my.test.rest.incomings.controllers.AuthenticationController;
 import my.test.rest.incomings.controllers.api.dto.Authentication;
 import my.test.rest.incomings.controllers.api.dto.Token;
@@ -52,9 +53,11 @@ public class ServiceStarter {
 //		return new PolicyBuilderImpl(new AuthStoreMock());
 //	}
     @Bean
-    public AuthFactory authBuilder() {
+    public AuthFactory authFactory(KafkaConfiguration kafkaConfiguration) {
         return new AuthFactoryImpl(
-                new PolicyBuilderImpl(new UserMockBuilderImpl(), new LoginEventTransmitterBuilderImpl()));
+                new PolicyBuilderImpl(new UserMockBuilderImpl(),
+                        new LogonEventTransmitterBuilderImpl(kafkaConfiguration.generateKafkaProperties(),
+                                kafkaConfiguration.getLogonTopicName())));
     }
 
     //@Bean

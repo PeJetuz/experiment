@@ -4,13 +4,13 @@ import my.test.rest.incomings.controllers.api.AuthenticationApi;
 import my.test.rest.incomings.controllers.api.dto.AuthInfo;
 import my.test.rest.incomings.controllers.api.dto.Authentication;
 import my.test.rest.incomings.controllers.api.dto.TokenPair;
-import my.test.rest.incomings.controllers.presenters.create.CreatePresenterModel;
-import my.test.rest.incomings.controllers.presenters.create.CreatePresenterModelImpl;
-import my.test.rest.incomings.controllers.presenters.login.LoginPresenterModel;
-import my.test.rest.incomings.controllers.presenters.login.LoginPresenterModelImpl;
+import my.test.rest.incomings.controllers.presenters.create.NewUserPresenterModel;
+import my.test.rest.incomings.controllers.presenters.create.NewUserPresenterModelImpl;
+import my.test.rest.incomings.controllers.presenters.login.LoginUserPresenterModel;
+import my.test.rest.incomings.controllers.presenters.login.LoginUserPresenterModelImpl;
 import my.test.authorization.rules.AuthFactory;
-import my.test.authorization.rules.CreateProcess;
-import my.test.authorization.rules.LoginProcess;
+import my.test.authorization.rules.NewUserInteractor;
+import my.test.authorization.rules.LoginUserInteractor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,19 +28,19 @@ public class AuthenticationController implements AuthenticationApi {
 
     @Override
     public ResponseEntity<Authentication> login(AuthInfo authInfo) {
-        LoginPresenterModel presenter = new LoginPresenterModelImpl(authInfo.getUserName());
-        LoginProcess loginProcess = authFactory
-                .createLoginProcess(presenter, authInfo.getUserName(), authInfo.getPasswordHash());
-        loginProcess.login();
+        LoginUserPresenterModel presenter = new LoginUserPresenterModelImpl(authInfo.getUserName());
+        LoginUserInteractor loginUserInteractor = authFactory
+                .createLoginUserInteractor(presenter, authInfo.getUserName(), authInfo.getPasswordHash());
+        loginUserInteractor.login();
         return presenter.renderModel();
     }
 
     @Override
     public ResponseEntity<Authentication> create(AuthInfo authInfo) {
-        CreatePresenterModel presenter = new CreatePresenterModelImpl(authInfo.getUserName());
-        CreateProcess createProcess = authFactory
+        NewUserPresenterModel presenter = new NewUserPresenterModelImpl(authInfo.getUserName());
+        NewUserInteractor newUserInteractor = authFactory
                 .createNewUserProcess(presenter, authInfo.getUserName(), authInfo.getPasswordHash());
-        createProcess.createNewUser();
+        newUserInteractor.createNewUser();
         return presenter.renderModel();
     }
 

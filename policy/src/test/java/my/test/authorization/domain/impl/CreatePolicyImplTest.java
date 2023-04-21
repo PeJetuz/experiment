@@ -1,52 +1,60 @@
 package my.test.authorization.domain.impl;
 
-import my.test.authorization.domain.api.store.User;
+import my.test.authorization.domain.api.store.NewUser;
 import my.test.authorization.domain.api.store.UserBuilder;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class CreatePolicyImplTest {
 
+    private UserBuilder userBuilder = Mockito.mock(UserBuilder.class);
+    private NewUser user = Mockito.mock(NewUser.class);
+
+    @BeforeEach
+    public void beforeEachTestInit() {
+        when(userBuilder.createNewUser(null, null)).thenReturn(user);
+    }
+
     @Test
-    public void createNewUserFalse() {
-        UserBuilder userBuilder = Mockito.mock(UserBuilder.class);
-        User user = Mockito.mock(User.class);
-        when(userBuilder.createUser(null, null)).thenReturn(user);
+    public void creatingAnExistingUser() {
         when(user.isUserExists()).thenReturn(true);
-        CreatePolicyImpl policy = new CreatePolicyImpl(userBuilder, null, null);
-        assertFalse(policy.createNewUser());
-        verify(user, times(0)).createNewUser(any());
+        CreatePolicyImpl subj = new CreatePolicyImpl(userBuilder, null, null);
+
+        subj.createNewUser();
+
+        verify(user, times(0)).createNewUser(isA(String.class));
     }
 
     @Test
-    public void createNewUserSuccess() {
-        UserBuilder userBuilder = Mockito.mock(UserBuilder.class);
-        User user = Mockito.mock(User.class);
-        when(userBuilder.createUser(null, null)).thenReturn(user);
+    public void creatingNewUser() {
         when(user.isUserExists()).thenReturn(false);
-        ArgumentCaptor<String> tokenCaptor = ArgumentCaptor.forClass(String.class);
-        when(user.createNewUser(tokenCaptor.capture())).thenReturn(true);
-        CreatePolicyImpl policy = new CreatePolicyImpl(userBuilder, null, null);
-        assertTrue(policy.createNewUser());
-        assertEquals("token", tokenCaptor.getValue());
+        CreatePolicyImpl subj = new CreatePolicyImpl(userBuilder, null, null);
+
+        subj.createNewUser();
+
+        verify(user).createNewUser(isA(String.class));
     }
 
     @Test
-    public void writeTokenAndExpirationDateTime() {
-        UserBuilder userBuilder = Mockito.mock(UserBuilder.class);
-        User user = Mockito.mock(User.class);
-        when(userBuilder.createUser(null, null)).thenReturn(user);
+    public void checkNewUserCreatedSuccessfully() {
+        when(user.isNewUserCreatedSuccessfully()).thenReturn(true);
+        CreatePolicyImpl subj = new CreatePolicyImpl(userBuilder, null, null);
+
+        assertTrue(subj.isNewUserCreatedSuccessfully());
+    }
+
+    @Test
+    public void checkWriteTokenAndLastRefreshDateTime() {
         CreatePolicyImpl policy = new CreatePolicyImpl(userBuilder, null, null);
         policy.writeTokenAndLastRefreshDateTime(null, null);
+
         verify(user).writeToken(null);
         verify(user).writeLastRefreshDateTime(null);
     }

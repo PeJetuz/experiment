@@ -27,7 +27,7 @@
         <module>starter</module>
         <module>oas</module>
         <module>policy</module>
-        <module>store</module>
+        <module>user-store</module>
         <module>service-bus</module>
         <!--		<module>helidon_se</module>-->
     </modules>

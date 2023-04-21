@@ -8,19 +8,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class AuthFactoryImplTest {
 
+    private PolicyBuilder policyBuilder = Mockito.mock(PolicyBuilder.class);
+    private AuthFactoryImpl subj = new AuthFactoryImpl(policyBuilder);
+
     @Test
-    public void createLoginProcess() {
-        PolicyBuilder policyBuilder = Mockito.mock(PolicyBuilder.class);
-        AuthFactoryImpl subj = new AuthFactoryImpl(policyBuilder);
-        LoginProcess loginProcess = subj.createLoginProcess(null, null, null);
-        assertNotNull(loginProcess);
+    public void createLoginUserInteractor() {
+        LoginUserInteractor loginUserInteractor = subj.createLoginUserInteractor(null, null, null);
+
+        assertNotNull(loginUserInteractor);
     }
 
     @Test
     public void createNewUserProcess() {
-        PolicyBuilder policyBuilder = Mockito.mock(PolicyBuilder.class);
-        AuthFactoryImpl subj = new AuthFactoryImpl(policyBuilder);
-        CreateProcess createProcess = subj.createNewUserProcess(null, null, null);
-        assertNotNull(createProcess);
+        NewUserInteractor newUserInteractor = subj.createNewUserProcess(null, null, null);
+
+        assertNotNull(newUserInteractor);
     }
 }
