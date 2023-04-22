@@ -27,10 +27,10 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 @SpringBootApplication
 @ComponentScan
-public class ServiceStarter {
+public class SpringStarter {
 
     public static void main(String[] args) {
-        SpringApplication.run(ServiceStarter.class, args);
+        SpringApplication.run(SpringStarter.class, args);
     }
 
     @Bean
