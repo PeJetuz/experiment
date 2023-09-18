@@ -1,24 +1,22 @@
 package my.test.authorization.store;
 
-import my.test.authorization.domain.api.store.LoginUser;
-import my.test.authorization.domain.api.store.NewUser;
+import my.test.authorization.domain.api.AuthenticationResponseFactory;
+import my.test.authorization.domain.api.CreationUserResponseFactory;
+import my.test.authorization.domain.api.UserInfo;
+import my.test.authorization.domain.api.store.AuthenticateUser;
 import my.test.authorization.domain.api.store.UserBuilder;
 
 
 public class UserMockBuilderImpl implements UserBuilder {
 
     @Override
-    public LoginUser createLoginUser(String userName, String passwordHash) {
-        return new LoginUserMock(new UserStoreMock(), userName, passwordHash);
+    public my.test.authorization.domain.api.store.NewUser createNewUser(UserInfo userInfo,
+            CreationUserResponseFactory responseFactory) {
+        return new NewUserImpl(new UserStoreInMemory(), userInfo, responseFactory);
     }
 
     @Override
-    public NewUser createNewUser(String userName, String passwordHash) {
-        return new NewUserMock(new UserStoreMock(), userName, passwordHash);
-    }
-
-    @Override
-    public LoginUser createGuestUser() {
-        return LoginUserMock.createGuestUser(new UserStoreMock());
+    public AuthenticateUser createAuthenticatedUser(UserInfo userInfo, AuthenticationResponseFactory responseFactory) {
+        return new AuthenticatedUserImpl(new UserStoreInMemory(), userInfo, responseFactory);
     }
 }

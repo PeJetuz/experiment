@@ -9,4 +9,11 @@ public interface LogonEventTransmitter {
      * Dispatches a logon event to Service Bus
      */
     void sendUserLogonEvent(String eventId);
+
+    record Fake() implements LogonEventTransmitter {
+
+        @Override
+        public void sendUserLogonEvent(String eventId) {
+        }
+    }
 }

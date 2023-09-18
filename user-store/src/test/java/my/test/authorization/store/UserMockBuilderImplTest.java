@@ -7,13 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class UserMockBuilderImplTest {
 
     @Test
-    public void createLoginUser() {
-        UserMockBuilderImpl builder = new UserMockBuilderImpl();
-
-        assertNotNull(builder.createLoginUser(null, null));
-    }
-
-    @Test
     public void createNewUser() {
         UserMockBuilderImpl builder = new UserMockBuilderImpl();
 
@@ -21,9 +14,9 @@ public class UserMockBuilderImplTest {
     }
 
     @Test
-    public void createGuestUser() {
+    public void createAuthenticatedUser() {
         UserMockBuilderImpl builder = new UserMockBuilderImpl();
 
-        assertNotNull(builder.createGuestUser());
+        assertNotNull(builder.createAuthenticatedUser(null, null));
     }
 }

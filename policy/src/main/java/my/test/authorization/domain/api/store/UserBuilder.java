@@ -1,10 +1,26 @@
 package my.test.authorization.domain.api.store;
 
+import my.test.authorization.domain.api.AuthenticationResponseFactory;
+import my.test.authorization.domain.api.CreationUserResponseFactory;
+import my.test.authorization.domain.api.UserInfo;
+
 public interface UserBuilder {
 
-    LoginUser createLoginUser(String userName, String passwordHash);
+    NewUser createNewUser(UserInfo userInfo, CreationUserResponseFactory responseFactory);
 
-    NewUser createNewUser(String userName, String passwordHash);
+    AuthenticateUser createAuthenticatedUser(UserInfo userInfo, AuthenticationResponseFactory responseFactory);
 
-    LoginUser createGuestUser();
+    record Fake(AuthenticateUser authenticateUser, NewUser newUser) implements UserBuilder {
+
+        @Override
+        public NewUser createNewUser(UserInfo userInfo, CreationUserResponseFactory responseFactory) {
+            return newUser;
+        }
+
+        @Override
+        public AuthenticateUser createAuthenticatedUser(UserInfo userInfo,
+                AuthenticationResponseFactory responseFactory) {
+            return authenticateUser;
+        }
+    }
 }

@@ -1,17 +1,19 @@
 package my.test.authorization.domain.api.store;
 
-import java.time.LocalDateTime;
-import java.util.function.Consumer;
-
 public interface NewUser {
 
-    boolean isUserExists();
+    CreationResult create();
 
-    void createNewUser(String token);
+    enum CreationResult {
+        SUCCESS,
+        UNSUCCESS
+    }
 
-    boolean isNewUserCreatedSuccessfully();
+    record Fake(CreationResult creationResult) implements NewUser {
 
-    void writeLastRefreshDateTime(Consumer<LocalDateTime> lastRefreshDateTime);
-
-    void writeToken(Consumer<String> tokenConsumer);
+        @Override
+        public CreationResult create() {
+            return creationResult;
+        }
+    }
 }

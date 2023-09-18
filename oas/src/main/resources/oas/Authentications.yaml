@@ -131,6 +131,7 @@ components:
         expirationDateTime:
           type: string
           format: date-time
+          pattern: "DD-MM-YYYY HH:mm:ss"
           example: 01.01.2020 16:35:46
     AuthInfo:
       required:

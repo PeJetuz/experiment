@@ -11,6 +11,10 @@ authentication:
   logon:
     topic:
       name: logon
+spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
 kafka:
   bootstrap:
     servers: localhost:9092

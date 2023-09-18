@@ -11,4 +11,12 @@ public interface LogonEventTransmitterBuilder {
      * @param userName - name of user
      */
     LogonEventTransmitter createLoginEventTransmitter(String userName);
+
+    record Fake(LogonEventTransmitter createLoginEventTransmitter) implements LogonEventTransmitterBuilder {
+
+        @Override
+        public LogonEventTransmitter createLoginEventTransmitter(String userName) {
+            return createLoginEventTransmitter;
+        }
+    }
 }
