@@ -4,8 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>my.test</groupId>
+        <artifactId>parent-pom</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-    <groupId>my.test.eureka</groupId>
+    <groupId>my.test.spring</groupId>
     <artifactId>oas</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -36,7 +42,7 @@
     </pluginRepositories>
     <dependencies>
         <dependency>
-            <groupId>my.test.eureka</groupId>
+            <groupId>my.test</groupId>
             <artifactId>policy</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>

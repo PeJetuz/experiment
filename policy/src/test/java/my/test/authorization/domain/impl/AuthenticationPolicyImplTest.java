@@ -16,7 +16,6 @@ public class AuthenticationPolicyImplTest {
                 new UserBuilder.Fake(new AuthenticateUser.Fake(AuthenticationResult.UNSUCCESS), null),
                 createUserInfo(), null, null);
         subj.authenticate();
-
     }
 
     private UserInfo createUserInfo() {
