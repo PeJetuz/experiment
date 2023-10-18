@@ -9,6 +9,7 @@ import my.test.rest.incomings.controllers.presenters.authentication.Authenticati
 import my.test.rest.incomings.controllers.presenters.creation.CreationUserResponseModelImpl;
 
 public class ResponseFactoryImpl implements ResponseFactory {
+
     private final Jsonb jsonb;
 
     public ResponseFactoryImpl(Jsonb jsonb) {

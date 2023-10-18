@@ -7,12 +7,17 @@ WORKDIR /helidon
 # Create a first layer to cache the "Maven World" in the local repository.
 # Incremental docker builds will always resume after that, unless you update
 # the pom
-ADD pom.xml pom.xml
-RUN mvn package -Dmaven.test.skip 
+ADD helidon-se.pom.xml pom.xml
+ADD policy policy
+ADD service-bus service-bus
+ADD user-store user-store
+RUN mvn install
 
 # Do the Maven build!
 # Incremental docker builds will resume here when you change sources
-ADD src src
+#ADD src src
+ADD helidon-se helidon-se
+WORKDIR /helidon/helidon-se
 RUN mvn package -DskipTests
 
 RUN echo "done!"
@@ -22,8 +27,8 @@ FROM openjdk:17-jdk-slim
 WORKDIR /helidon
 
 # Copy the binary built in the 1st stage
-COPY --from=build /helidon/target/helidon-quickstart-se.jar ./
-COPY --from=build /helidon/target/libs ./libs
+COPY --from=build /helidon/helidon-se/target/helidon-quickstart-se.jar ./
+COPY --from=build /helidon/helidon-se/target/libs ./libs
 
 CMD ["java", "-jar", "helidon-quickstart-se.jar"]
 

@@ -6,8 +6,11 @@ public interface AuthenticationResponseModel {
 
     final class Fake implements AuthenticationResponseModel {
 
+        public int sendCount = 0;
+
         @Override
         public void send() {
+            sendCount++;
         }
     }
 }

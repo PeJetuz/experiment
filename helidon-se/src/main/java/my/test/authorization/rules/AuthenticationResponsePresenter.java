@@ -8,6 +8,8 @@ public interface AuthenticationResponsePresenter extends AuthenticationResponseF
         AuthenticationResponseModel {
 
     final class Fake implements AuthenticationResponsePresenter {
+        public boolean incorrectPassword;
+        public boolean userNotFound;
 
         @Override
         public void send() {
@@ -15,10 +17,12 @@ public interface AuthenticationResponsePresenter extends AuthenticationResponseF
 
         @Override
         public void userNotFound() {
+            this.userNotFound = true;
         }
 
         @Override
         public void incorrectPassword() {
+            this.incorrectPassword = true;
         }
 
         @Override

@@ -11,18 +11,18 @@ public class AuthenticateUserInteractorImpl implements AuthenticateUserInteracto
 
     private final AuthenticationPolicy authenticationPolicy;
     private final UserInfo userInfo;
-    private final AuthenticationResponsePresenter responseBuilder;
+    private final AuthenticationResponsePresenter responsePresenter;
 
     public AuthenticateUserInteractorImpl(PolicyFactory policyFactory, UserInfo userInfo,
-            AuthenticationResponsePresenter responseBuilder) {
-        this.authenticationPolicy = policyFactory.buildAuthenticatePolicy(userInfo, responseBuilder);
+            AuthenticationResponsePresenter responsePresenter) {
+        this.authenticationPolicy = policyFactory.buildAuthenticatePolicy(userInfo, responsePresenter);
         this.userInfo = userInfo;
-        this.responseBuilder = responseBuilder;
+        this.responsePresenter = responsePresenter;
     }
 
     @Override
     public AuthenticationResponseModel authenticateAndGetPresenter() {
         authenticationPolicy.authenticate();
-        return responseBuilder;
+        return responsePresenter;
     }
 }

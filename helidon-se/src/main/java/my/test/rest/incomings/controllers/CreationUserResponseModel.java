@@ -6,8 +6,11 @@ public interface CreationUserResponseModel {
 
     final class Fake implements CreationUserResponseModel {
 
+        public int sendCount = 0;
+
         @Override
         public void send() {
+            sendCount++;
         }
     }
 }

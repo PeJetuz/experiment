@@ -12,21 +12,21 @@ import my.test.rest.incomings.controllers.CreationUserResponseModel;
 public class CreateUserInteractorImpl implements CreateUserInteractor {
 
     private final CreationPolicy policy;
-    private final CreationUserResponsePresenter responseBuilder;
+    private final CreationUserResponsePresenter responsePresenter;
     private final Validator validatorChain;
 
     public CreateUserInteractorImpl(PolicyFactory policyFactory, UserInfo userInfo,
-            CreationUserResponsePresenter responseBuilder) {
-        this(policyFactory, userInfo, responseBuilder,
-                new EmptyStringChainValidator(userInfo.name(), responseBuilder::invalidUserNameField,
+            CreationUserResponsePresenter responsePresenter) {
+        this(policyFactory, userInfo, responsePresenter,
+                new EmptyStringChainValidator(userInfo.name(), responsePresenter::invalidUserNameField,
                         new EmptyStringChainValidator(userInfo.passwordHash(),
-                                responseBuilder::invalidPasswordHashField, Validator.TRUE)));
+                                responsePresenter::invalidPasswordHashField, Validator.TRUE)));
     }
 
     public CreateUserInteractorImpl(PolicyFactory policyFactory, UserInfo userInfo,
-            CreationUserResponsePresenter responseBuilder, Validator validatorChain) {
-        this.policy = policyFactory.buildCreationPolicy(userInfo, responseBuilder);
-        this.responseBuilder = responseBuilder;
+            CreationUserResponsePresenter responsePresenter, Validator validatorChain) {
+        this.policy = policyFactory.buildCreationPolicy(userInfo, responsePresenter);
+        this.responsePresenter = responsePresenter;
         this.validatorChain = validatorChain;
     }
 
@@ -36,6 +36,6 @@ public class CreateUserInteractorImpl implements CreateUserInteractor {
             policy.create();
         }
 
-        return responseBuilder;
+        return responsePresenter;
     }
 }
