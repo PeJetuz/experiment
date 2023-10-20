@@ -8,7 +8,7 @@ import io.helidon.health.checks.HealthChecks;
 import io.helidon.common.LogConfig;
 import io.helidon.common.reactive.Single;
 import io.helidon.config.Config;
-//import io.helidon.openapi.OpenAPISupport;
+import io.helidon.openapi.OpenAPISupport;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.WebServer;
 import jakarta.json.bind.Jsonb;
@@ -94,7 +94,7 @@ public final class Main {
                 .build();
 
         Routing.Builder builder = Routing.builder()
-                //.register(OpenAPISupport.create(config.get(OpenAPISupport.Builder.CONFIG_KEY)))
+                .register(OpenAPISupport.create(config.get(OpenAPISupport.Builder.CONFIG_KEY)))
                 .register(MetricsSupport.create()) // Metrics at "/metrics"
                 .register(health) // Health at "/health"
                 .register("/simple-greet", simpleGreetService)

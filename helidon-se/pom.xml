@@ -63,10 +63,14 @@
             <groupId>io.helidon.health</groupId>
             <artifactId>helidon-health-checks</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>io.helidon.openapi</groupId>-->
-<!--            <artifactId>helidon-openapi</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>io.helidon.openapi</groupId>
+            <artifactId>helidon-openapi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.integrations.openapi-ui</groupId>
+            <artifactId>helidon-integrations-openapi-ui</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.helidon.media</groupId>
             <artifactId>helidon-media-jsonp</artifactId>
