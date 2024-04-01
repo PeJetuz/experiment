@@ -24,8 +24,10 @@
 
 package my.test.authorization.domain.validator;
 
+import my.test.authorization.domain.events.DomainEvent;
+
 /**
- * Validator interface.
+ * Event validator API.
  *
  * @since 1.0
  */
@@ -36,18 +38,31 @@ public interface Validator {
      */
     Validator TRUE = new TrueValidator();
 
-    boolean validate();
+    /**
+     * False validator instance.
+     */
+    Validator FALSE = new FalseValidator();
+
+    DomainEvent validate();
 
     /**
      * True validator implementation.
      *
      * @since 1.0
      */
-    final class TrueValidator implements Validator {
+    final class TrueValidator implements Validator, DomainEvent {
+        private TrueValidator() {
+            // do nothing
+        }
 
         @Override
-        public boolean validate() {
-            return true;
+        public DomainEvent validate() {
+            return this;
+        }
+
+        @Override
+        public String eventName() {
+            return TrueValidator.class.getName();
         }
     }
 
@@ -56,11 +71,20 @@ public interface Validator {
      *
      * @since 1.0
      */
-    final class FalseValidator implements Validator {
+    final class FalseValidator implements Validator, DomainEvent {
+
+        private FalseValidator() {
+            // do nothing
+        }
 
         @Override
-        public boolean validate() {
-            return false;
+        public DomainEvent validate() {
+            return this;
+        }
+
+        @Override
+        public String eventName() {
+            return FalseValidator.class.getName();
         }
     }
 }

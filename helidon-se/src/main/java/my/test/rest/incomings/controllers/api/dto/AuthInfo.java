@@ -29,7 +29,7 @@ public class AuthInfo {
     /**
      * MD5 hashed password
      *
-     * @return passwordHash
+     * @return password
      */
     public String getPasswordHash() {
         return passwordHash;
@@ -48,7 +48,7 @@ public class AuthInfo {
         sb.append("class AuthInfo {\n");
 
         sb.append("    userName: ").append(toIndentedString(userName)).append("\n");
-        sb.append("    passwordHash: ").append(toIndentedString(passwordHash)).append("\n");
+        sb.append("    password: ").append(toIndentedString(passwordHash)).append("\n");
         sb.append("}");
         return sb.toString();
     }

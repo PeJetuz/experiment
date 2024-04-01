@@ -1,99 +1,124 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2023 Vladimir Shapkin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package my.test.authorization.store;
 
 import java.time.LocalDateTime;
 import java.util.Random;
 import my.test.authorization.store.UserStore.AuthInfoValue;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static my.test.authorization.store.UserStore.GUEST;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+/**
+ * Test fo for UserStoreInMemory.
+ *
+ * @since 1.0
+ */
+final class UserStoreInMemoryTest {
 
-public class UserStoreInMemoryTest {
-
-    private Random random = new Random();
+    /**
+     * Random generator.
+     */
+    private final Random random = new Random();
 
     @Test
-    public void createUser() {
-        UserStoreInMemory subj = new UserStoreInMemory();
-        AuthInfoValue authInfoValue = createEmptyAuthInfoValue();
-
-        AuthInfoValue result = subj.createUser(authInfoValue);
-
-        assertEquals(authInfoValue, result);
-    }
-
-    private AuthInfoValue createEmptyAuthInfoValue() {
-        String name = "name" + random.nextLong();
-        return new AuthInfoValue(name, null, null, null);
+    void createUser() {
+        final UserStore subj = new UserStoreInMemory();
+        final AuthInfoValue empty = this.createEmptyAuthInfoValue();
+        final AuthInfoValue result = subj.createUser(empty);
+        Assertions.assertThat(result).isEqualTo(empty);
     }
 
     @Test
-    public void createUserAlreadyExists() {
-        UserStoreInMemory subj = new UserStoreInMemory();
-        AuthInfoValue authInfoValue = createEmptyAuthInfoValue();
-
-        subj.createUser(authInfoValue);
-        AuthInfoValue result = subj.createUser(authInfoValue);
-
-        assertEquals(UserStore.USER_ALREADY_EXISTS, result);
+    void createUserAlreadyExists() {
+        final UserStore subj = new UserStoreInMemory();
+        final AuthInfoValue empty = this.createEmptyAuthInfoValue();
+        subj.createUser(empty);
+        final AuthInfoValue result = subj.createUser(empty);
+        Assertions.assertThat(result).isEqualTo(UserStore.USER_EXISTS);
     }
 
     @Test
-    public void findUserByName() {
-        UserStoreInMemory subj = new UserStoreInMemory();
-        AuthInfoValue authInfoValue = createAuthInfoValue();
+    void findUserByName() {
+        final UserStore subj = new UserStoreInMemory();
+        final AuthInfoValue rndvalue = this.createAuthInfoValue();
+        final AuthInfoValue created = subj.createUser(rndvalue);
+        final AuthInfoValue found = subj.findUserByName(rndvalue.name());
+        Assertions.assertThat(created).isEqualTo(rndvalue);
+        Assertions.assertThat(found).isEqualTo(rndvalue);
+    }
 
-        AuthInfoValue createResult = subj.createUser(authInfoValue);
-        AuthInfoValue findResult = subj.findUserByName(authInfoValue.name());
+    @Test
+    void isEmptyUserExists() {
+        final UserStore subj = new UserStoreInMemory();
+        Assertions.assertThat(subj.findUserByName("")).isEqualTo(UserStore.USER_NOF_FOUND);
+    }
 
-        assertEquals(authInfoValue, createResult);
-        assertEquals(authInfoValue, findResult);
+    @Test
+    void isGuestUserExists() {
+        final UserStore subj = new UserStoreInMemory();
+        Assertions.assertThat(subj.findUserByName(UserStore.GUEST))
+            .isNotEqualTo(UserStore.USER_NOF_FOUND);
+    }
+
+    @Test
+    void isVasyaUserExists() {
+        final UserStore subj = new UserStoreInMemory();
+        Assertions.assertThat(subj.findUserByName("Vasya")).isNotEqualTo(UserStore.USER_NOF_FOUND);
+    }
+
+    @Test
+    void updateUserInfo() {
+        final UserStore subj = new UserStoreInMemory();
+        final AuthInfoValue rndvalue = this.createAuthInfoValue();
+        final AuthInfoValue upvalue = this.createUpdatedAuthInfoValue(rndvalue);
+        final AuthInfoValue crvalue = subj.createUser(rndvalue);
+        subj.updateUserInfo(upvalue);
+        final AuthInfoValue found = subj.findUserByName(rndvalue.name());
+        Assertions.assertThat(crvalue).isEqualTo(rndvalue);
+        Assertions.assertThat(found).isEqualTo(upvalue);
     }
 
     private AuthInfoValue createAuthInfoValue() {
-        String name = "name" + random.nextLong();
-        String password = "password" + random.nextLong();
-        String token = "token" + random.nextLong();
-        LocalDateTime expirationTime = LocalDateTime.now();
-        return new AuthInfoValue(name, password, expirationTime, token);
+        final String name = String.format("name %d", this.random.nextLong());
+        final String password = String.format("password %d", this.random.nextLong());
+        final String token = String.format("token %d", this.random.nextLong());
+        final LocalDateTime exptime = LocalDateTime.now();
+        return new AuthInfoValue(name, password, exptime, token);
     }
 
-
-    @Test
-    public void updateUserInfo() {
-        UserStoreInMemory subj = new UserStoreInMemory();
-        AuthInfoValue authInfoValue = createAuthInfoValue();
-        AuthInfoValue updatedInfoValue = createUpdatedAuthInfoValue(authInfoValue);
-
-        AuthInfoValue createResult = subj.createUser(authInfoValue);
-        subj.updateUserInfo(updatedInfoValue);
-        AuthInfoValue findResult = subj.findUserByName(authInfoValue.name());
-
-        assertEquals(authInfoValue, createResult);
-        assertEquals(updatedInfoValue, findResult);
+    private AuthInfoValue createEmptyAuthInfoValue() {
+        final String name = String.format("name %d", this.random.nextLong());
+        return new AuthInfoValue(name, null, null, null);
     }
 
-    private AuthInfoValue createUpdatedAuthInfoValue(AuthInfoValue authInfoValue) {
-        return new AuthInfoValue(authInfoValue.name(), "password" + random.nextLong(),
-                LocalDateTime.now().minusDays(10), "token" + random.nextLong());
-    }
-
-    @Test
-    public void isGuestUserExists() {
-        UserStoreInMemory subj = new UserStoreInMemory();
-        assertNotEquals(UserStore.USER_NOF_FOUND, subj.findUserByName(GUEST));
-    }
-
-    @Test
-    public void isVasyaUserExists() {
-        UserStoreInMemory subj = new UserStoreInMemory();
-        assertNotEquals(UserStore.USER_NOF_FOUND, subj.findUserByName("Vasya"));
-    }
-
-    @Test
-    public void isEmptyUserExists() {
-        UserStoreInMemory subj = new UserStoreInMemory();
-        assertEquals(UserStore.USER_NOF_FOUND, subj.findUserByName(""));
+    private AuthInfoValue createUpdatedAuthInfoValue(final AuthInfoValue entity) {
+        return new AuthInfoValue(
+            entity.name(),
+            String.format("password %d", this.random.nextLong()),
+            LocalDateTime.now().minusDays(10),
+            String.format("token %d", this.random.nextLong())
+        );
     }
 }

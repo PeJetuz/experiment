@@ -36,13 +36,17 @@ final class ValidatorTest {
 
     @Test
     void testTrueValidator() {
-        final Validator.TrueValidator subj = new Validator.TrueValidator();
-        Assertions.assertThat(subj.validate()).isTrue();
+        final Validator subj = Validator.TRUE;
+        Assertions.assertThat(subj.validate()).isInstanceOf(Validator.TrueValidator.class);
+        Assertions.assertThat(subj.validate().eventName())
+            .isEqualTo(Validator.TrueValidator.class.getName());
     }
 
     @Test
     void testFalseValidator() {
-        final Validator.FalseValidator subj = new Validator.FalseValidator();
-        Assertions.assertThat(subj.validate()).isFalse();
+        final Validator subj = Validator.FALSE;
+        Assertions.assertThat(subj.validate()).isInstanceOf(Validator.FalseValidator.class);
+        Assertions.assertThat(subj.validate().eventName())
+            .isEqualTo(Validator.FalseValidator.class.getName());
     }
 }

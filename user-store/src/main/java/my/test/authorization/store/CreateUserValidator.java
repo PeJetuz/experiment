@@ -26,50 +26,62 @@ package my.test.authorization.store;
 
 import java.time.LocalDateTime;
 import my.test.authorization.domain.api.UserInfo;
-import my.test.authorization.domain.api.store.NewUser;
 import my.test.authorization.domain.events.DomainEvent;
 import my.test.authorization.domain.events.UserAlreadyExistsEvent;
 import my.test.authorization.domain.events.UserCreatedSuccessfullyEvent;
-import my.test.authorization.store.UserStore.AuthInfoValue;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import my.test.authorization.domain.validator.Validator;
 
 /**
- * Test fo for NewUserImpl.
+ * Creates a new user and returns an event indicating success or that the user already exists.
+ * This is the last validator in the chain.
  *
  * @since 1.0
  */
-final class NewUserImplTest {
+final class CreateUserValidator implements Validator {
 
-    @Test
-    void alreadyExists() {
-        final NewUser subj = new NewUserImpl(
-            new UserStore.Dummy(UserStore.USER_EXISTS),
-            createEmptyUserInfo()
-        );
-        final DomainEvent event = subj.create();
-        Assertions.assertThat(event).isInstanceOf(UserAlreadyExistsEvent.class);
+    /**
+     * Store.
+     */
+    private final UserStore store;
+
+    /**
+     * User information to load.
+     */
+    private final UserInfo uinfo;
+
+    CreateUserValidator(final UserStore store, final UserInfo uinfo) {
+        this.store = store;
+        this.uinfo = uinfo;
     }
 
-    @Test
-    void success() {
-        final String name = "name";
-        final String token = "token";
-        final LocalDateTime exptime = LocalDateTime.now();
-        final AuthInfoValue entity = new AuthInfoValue(name, "password", exptime, token);
-        final NewUser subj = new NewUserImpl(
-            new UserStore.Dummy(entity),
-            createEmptyUserInfo()
+    @Override
+    public DomainEvent validate() {
+        final UserStore.AuthInfoValue entity = this.store.createUser(
+            new UserStore.AuthInfoValue(
+                this.uinfo.name(),
+                this.uinfo.passwordHash(),
+                LocalDateTime.now(),
+                this.geterateToken()
+            )
         );
-        final DomainEvent event = subj.create();
-        Assertions.assertThat(event).isInstanceOf(UserCreatedSuccessfullyEvent.class);
-        final UserCreatedSuccessfullyEvent result = (UserCreatedSuccessfullyEvent) event;
-        Assertions.assertThat(result.userName()).isEqualTo(name);
-        Assertions.assertThat(result.token()).isEqualTo(token);
-        Assertions.assertThat(result.expiration()).isEqualTo(exptime);
+        final DomainEvent event;
+        if (userAlreadyExists(entity)) {
+            event = new UserAlreadyExistsEvent.UserAlreadyExistsEventImpl();
+        } else {
+            event = new UserCreatedSuccessfullyEvent.UserCreatedSuccessfullyEventImpl(
+                entity.name(),
+                entity.token(),
+                entity.lastTime()
+            );
+        }
+        return event;
     }
 
-    private static UserInfo createEmptyUserInfo() {
-        return new UserInfo("name", "pass");
+    private String geterateToken() {
+        return this.uinfo.name() + LocalDateTime.now();
+    }
+
+    private static boolean userAlreadyExists(final UserStore.AuthInfoValue entity) {
+        return entity == UserStore.USER_EXISTS;
     }
 }

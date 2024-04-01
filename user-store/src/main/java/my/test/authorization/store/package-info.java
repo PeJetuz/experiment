@@ -22,27 +22,9 @@
  * SOFTWARE.
  */
 
-package my.test.authorization.store;
-
-import my.test.authorization.domain.api.UserInfo;
-import my.test.authorization.domain.api.store.AuthenticateUser;
-import my.test.authorization.domain.api.store.NewUser;
-import my.test.authorization.domain.api.store.UserFactory;
-
 /**
  * User store implementation.
  *
  * @since 1.0
  */
-public final class UserMockFactoryImpl implements UserFactory {
-
-    @Override
-    public NewUser createNewUser(final UserInfo info) {
-        return new NewUserImpl(new UserStoreInMemory(), info);
-    }
-
-    @Override
-    public AuthenticateUser createAuthenticatedUser(final UserInfo info) {
-        return new AuthenticatedUserImpl(new UserStoreInMemory(), info);
-    }
-}
+package my.test.authorization.store;

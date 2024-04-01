@@ -24,7 +24,10 @@
 
 package my.test.authorization.domain.validator;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import my.test.authorization.domain.events.DomainEvent;
+import my.test.authorization.domain.events.EmptyNameEvent;
+import my.test.authorization.domain.events.EmptyPasswordEvent;
+import my.test.authorization.domain.events.IpAuthenticationSuccessfulEvent;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -37,37 +40,35 @@ final class EmptyStringChainValidatorTest {
 
     @Test
     void validateNullString() {
-        final AtomicBoolean action = new AtomicBoolean(false);
+        final DomainEvent event = new EmptyNameEvent.EmptyNameEventImpl();
         final EmptyStringChainValidator subj = new EmptyStringChainValidator(
             null,
-            () -> action.set(true),
+            event,
             null
         );
-        Assertions.assertThat(subj.validate()).isFalse();
-        Assertions.assertThat(action.get()).isTrue();
+        Assertions.assertThat(subj.validate()).isEqualTo(event);
     }
 
     @Test
     void validateEmptyString() {
-        final AtomicBoolean action = new AtomicBoolean(false);
+        final DomainEvent event = new EmptyPasswordEvent.EmptyPasswordEventImpl();
         final EmptyStringChainValidator subj = new EmptyStringChainValidator(
             "",
-            () -> action.set(true),
+            event,
             null
         );
-        Assertions.assertThat(subj.validate()).isFalse();
-        Assertions.assertThat(action.get()).isTrue();
+        Assertions.assertThat(subj.validate()).isEqualTo(event);
     }
 
     @Test
     void validateString() {
-        final AtomicBoolean action = new AtomicBoolean(false);
+        final DomainEvent event =
+            new IpAuthenticationSuccessfulEvent.IpAuthenticationSuccessfulEventImpl();
         final EmptyStringChainValidator subj = new EmptyStringChainValidator(
             "any",
-            () -> action.set(true),
+            event,
             Validator.TRUE
         );
-        Assertions.assertThat(subj.validate()).isTrue();
-        Assertions.assertThat(action.get()).isFalse();
+        Assertions.assertThat(subj.validate()).isEqualTo(Validator.TRUE);
     }
 }

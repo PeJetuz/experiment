@@ -24,6 +24,8 @@
 
 package my.test.authorization.domain.validator;
 
+import my.test.authorization.domain.events.DomainEvent;
+
 /**
  * Empty String chain validator.
  *
@@ -37,29 +39,28 @@ public final class EmptyStringChainValidator implements Validator {
     private final String subject;
 
     /**
-     * Method that will be called if the check fails.
+     * Event that will be returned if the check fails.
      */
-    private final Runnable action;
+    private final DomainEvent fevent;
 
     /**
      * Next validator in case of successful verification.
      */
     private final Validator next;
 
-    public EmptyStringChainValidator(final String subject, final Runnable action,
+    public EmptyStringChainValidator(final String subject, final DomainEvent event,
         final Validator next
     ) {
         this.subject = subject;
-        this.action = action;
+        this.fevent = event;
         this.next = next;
     }
 
     @Override
-    public boolean validate() {
-        final boolean result;
+    public DomainEvent validate() {
+        final DomainEvent result;
         if (this.subject == null || this.subject.isBlank()) {
-            this.action.run();
-            result = false;
+            result = this.fevent;
         } else {
             result = this.next.validate();
         }

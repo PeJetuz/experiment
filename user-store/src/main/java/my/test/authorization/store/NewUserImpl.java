@@ -1,65 +1,69 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2023 Vladimir Shapkin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package my.test.authorization.store;
 
-import java.time.LocalDateTime;
-import my.test.authorization.domain.api.CreationUserResponseBuilder;
-import my.test.authorization.domain.api.CreationUserResponseBuilder.UserInfoBuilder;
 import my.test.authorization.domain.api.UserInfo;
 import my.test.authorization.domain.api.store.NewUser;
+import my.test.authorization.domain.events.DomainEvent;
+import my.test.authorization.domain.events.EmptyNameEvent;
+import my.test.authorization.domain.events.EmptyPasswordEvent;
+import my.test.authorization.domain.validator.EmptyStringChainValidator;
 import my.test.authorization.domain.validator.Validator;
-import my.test.authorization.store.UserStore.AuthInfoValue;
 
-public class NewUserImpl implements NewUser {
-
-    private final UserStore userStore;
-    private final UserInfo userInfo;
-    private final CreationUserResponseBuilder responseFactory;
+/**
+ * User store implementation.
+ *
+ * @since 1.0
+ */
+final class NewUserImpl implements NewUser {
 
     /**
-     * Validator chain.
+     * User field validator.
      */
     private final Validator validatorch;
 
+    NewUserImpl(final UserStore store, final UserInfo uinfo) {
+        this(
+            new EmptyStringChainValidator(
+                uinfo.name(),
+                new EmptyNameEvent.EmptyNameEventImpl(),
+                new EmptyStringChainValidator(
+                    uinfo.passwordHash(),
+                    new EmptyPasswordEvent.EmptyPasswordEventImpl(),
+                    new CreateUserValidator(store, uinfo)
+                )
+            )
+        );
+    }
 
-    public NewUserImpl(UserStore userStore, UserInfo userInfo, CreationUserResponseBuilder responseFactory) {
-        this.userStore = userStore;
-        this.userInfo = userInfo;
-        this.responseFactory = responseFactory;
-        /*
-        new EmptyStringChainValidator(userInfo.name(), responseBuilder::emptyName,
-                        new EmptyStringChainValidator(userInfo.passwordHash(),
-                                responseBuilder::emptyPassword, Validator.TRUE))
-         */
+    NewUserImpl(final Validator validators) {
+        this.validatorch = validators;
     }
 
     @Override
-    public CreationResult create() {
-        AuthInfoValue authInfoValue = userStore.createUser(new AuthInfoValue(userInfo.name(),
-                userInfo.passwordHash(), LocalDateTime.now(), geterateToken()));
-        if (userAlreadyExists(authInfoValue)) {
-            buildUserAlreadyExists();
-            return CreationResult.UNSUCCESS;
-        } else {
-            buildSuccessOperation(authInfoValue);
-            return CreationResult.SUCCESS;
-        }
-    }
-
-    private String geterateToken() {
-        return userInfo.name() + LocalDateTime.now();
-    }
-
-    private boolean userAlreadyExists(AuthInfoValue authInfoValue) {
-        return authInfoValue == UserStore.USER_ALREADY_EXISTS;
-    }
-
-    private void buildUserAlreadyExists() {
-        responseFactory.userExists();
-    }
-
-    private void buildSuccessOperation(AuthInfoValue authInfoValue) {
-        UserInfoBuilder userInfoBuilder = responseFactory.success();
-        userInfoBuilder.writeUserName(authInfoValue.name());
-        userInfoBuilder.writeToken(authInfoValue.token());
-        userInfoBuilder.writeTokenExpirationDate(authInfoValue.lastRefreshDateTime());
+    public DomainEvent create() {
+        return this.validatorch.validate();
     }
 }
