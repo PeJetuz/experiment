@@ -1,8 +1,8 @@
 package my.test.authorization.rules.creation;
 
 import my.test.authorization.domain.api.AuthenticationPolicy;
-import my.test.authorization.domain.api.CreationPolicy;
-import my.test.authorization.domain.api.PolicyFactory;
+import my.test.authorization.domain.api.CreationPolicy.Dummy;
+import my.test.authorization.domain.api.PolicyFactory.PolicyFactorySpy;
 import my.test.authorization.domain.api.UserInfo;
 import my.test.authorization.rules.CreationUserResponsePresenter;
 import my.test.authorization.rules.creation.validator.Validator;
@@ -16,7 +16,7 @@ public class CreateUserInteractorImplTest {
     public void createNewUserAndGetPresenterTest() {
         CreationUserResponsePresenter.Fake presenter = new CreationUserResponsePresenter.Fake();
         CreateUserInteractorImpl subj = new CreateUserInteractorImpl(
-                new PolicyFactory.Fake(new AuthenticationPolicy.Fake(), new CreationPolicy.Fake()),
+                new PolicyFactorySpy(new AuthenticationPolicy.Dummy(), new Dummy()),
                 new UserInfo(null, null),
                 presenter,
                 Validator.TRUE);
@@ -28,7 +28,7 @@ public class CreateUserInteractorImplTest {
     public void createNewUserAndGetPresenterConstructorTest() {
         CreationUserResponsePresenter.Fake presenter = new CreationUserResponsePresenter.Fake();
         CreateUserInteractorImpl subj = new CreateUserInteractorImpl(
-                new PolicyFactory.Fake(new AuthenticationPolicy.Fake(), new CreationPolicy.Fake()),
+                new PolicyFactorySpy(new AuthenticationPolicy.Dummy(), new Dummy()),
                 new UserInfo(null, null),
                 presenter);
 

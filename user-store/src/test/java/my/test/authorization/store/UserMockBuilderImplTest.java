@@ -8,14 +8,14 @@ public class UserMockBuilderImplTest {
 
     @Test
     public void createNewUser() {
-        UserMockBuilderImpl builder = new UserMockBuilderImpl();
+        UserMockFactoryImpl builder = new UserMockFactoryImpl();
 
         assertNotNull(builder.createNewUser(null, null));
     }
 
     @Test
     public void createAuthenticatedUser() {
-        UserMockBuilderImpl builder = new UserMockBuilderImpl();
+        UserMockFactoryImpl builder = new UserMockFactoryImpl();
 
         assertNotNull(builder.createAuthenticatedUser(null, null));
     }

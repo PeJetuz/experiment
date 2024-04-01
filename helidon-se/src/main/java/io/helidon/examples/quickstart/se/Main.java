@@ -13,12 +13,11 @@ import io.helidon.webserver.Routing;
 import io.helidon.webserver.WebServer;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
-import my.test.authorization.domain.api.servicebus.LogonEventTransmitter;
-import my.test.authorization.domain.api.servicebus.LogonEventTransmitterBuilder;
+import my.test.authorization.domain.api.servicebus.LoginEventTransmitter;
 import my.test.authorization.domain.impl.PolicyFactoryImpl;
 import my.test.authorization.rules.impl.AuthFactoryImpl;
 import my.test.authorization.rules.impl.ResponseFactoryImpl;
-import my.test.authorization.store.UserMockBuilderImpl;
+import my.test.authorization.store.UserMockFactoryImpl;
 import my.test.rest.incomings.controllers.impl.AuthenticationServiceImpl;
 
 /**
@@ -100,8 +99,8 @@ public final class Main {
                 .register("/simple-greet", simpleGreetService)
                 .register("/greet", greetService)
                 .register("/api", new AuthenticationServiceImpl(
-                        new AuthFactoryImpl(new PolicyFactoryImpl(new UserMockBuilderImpl(),
-                                new LogonEventTransmitterBuilder.Fake(new LogonEventTransmitter.Fake()))),
+                        new AuthFactoryImpl(new PolicyFactoryImpl(new UserMockFactoryImpl(),
+                                new my.test.authorization.domain.api.servicebus.LoginEventTransmitterBuilder.Stub(new LoginEventTransmitter.Dummy()))),
                         new ResponseFactoryImpl(JSONB)));
 
         return builder.build();

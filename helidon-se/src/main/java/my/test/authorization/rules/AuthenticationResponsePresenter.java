@@ -1,10 +1,10 @@
 package my.test.authorization.rules;
 
-import my.test.authorization.domain.api.AuthenticationResponseFactory;
 import my.test.rest.incomings.controllers.AuthenticationResponseModel;
 
 
-public interface AuthenticationResponsePresenter extends AuthenticationResponseFactory,
+public interface AuthenticationResponsePresenter extends
+        AuthenticationResponseBuilder,
         AuthenticationResponseModel {
 
     final class Fake implements AuthenticationResponsePresenter {
@@ -21,12 +21,12 @@ public interface AuthenticationResponsePresenter extends AuthenticationResponseF
         }
 
         @Override
-        public void incorrectPassword() {
+        public void passwordFailed() {
             this.incorrectPassword = true;
         }
 
         @Override
-        public UserData success() {
+        public UserInfoBuilder success() {
             return null;
         }
     }

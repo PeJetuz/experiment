@@ -15,7 +15,7 @@ public class AuthenticateUserInteractorImpl implements AuthenticateUserInteracto
 
     public AuthenticateUserInteractorImpl(PolicyFactory policyFactory, UserInfo userInfo,
             AuthenticationResponsePresenter responsePresenter) {
-        this.authenticationPolicy = policyFactory.buildAuthenticatePolicy(userInfo, responsePresenter);
+        this.authenticationPolicy = policyFactory.makeAuthenticatePolicy(userInfo, responsePresenter);
         this.userInfo = userInfo;
         this.responsePresenter = responsePresenter;
     }

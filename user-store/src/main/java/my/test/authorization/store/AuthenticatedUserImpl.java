@@ -1,8 +1,6 @@
 package my.test.authorization.store;
 
 import java.time.LocalDateTime;
-import my.test.authorization.domain.api.AuthenticationResponseFactory;
-import my.test.authorization.domain.api.AuthenticationResponseFactory.UserData;
 import my.test.authorization.domain.api.UserInfo;
 import my.test.authorization.domain.api.store.AuthenticateUser;
 import my.test.authorization.store.UserStore.AuthInfoValue;
@@ -13,10 +11,10 @@ public class AuthenticatedUserImpl implements AuthenticateUser {
 
     private final UserStore userStore;
     private final UserInfo userInfo;
-    private final AuthenticationResponseFactory responseFactory;
+    private final AuthenticationResponseBuilder responseFactory;
 
     public AuthenticatedUserImpl(UserStore userStore, UserInfo userInfo,
-            AuthenticationResponseFactory responseFactory) {
+            AuthenticationResponseBuilder responseFactory) {
         this.userStore = userStore;
         this.userInfo = userInfo;
         this.responseFactory = responseFactory;
@@ -68,14 +66,14 @@ public class AuthenticatedUserImpl implements AuthenticateUser {
 
 
     private void buildSuccessOperation(AuthInfoValue authInfoValue) {
-        UserData userDataBuilder = responseFactory.success();
-        userDataBuilder.writeUserName(authInfoValue.name());
-        userDataBuilder.writeToken(authInfoValue.token());
-        userDataBuilder.writeTokenExpirationDate(authInfoValue.lastRefreshDateTime());
+        UserInfoBuilder userInfoBuilderBuilder = responseFactory.success();
+        userInfoBuilderBuilder.writeUserName(authInfoValue.name());
+        userInfoBuilderBuilder.writeToken(authInfoValue.token());
+        userInfoBuilderBuilder.writeTokenExpirationDate(authInfoValue.lastRefreshDateTime());
     }
 
     private void buildIncorrectPassword() {
-        responseFactory.incorrectPassword();
+        responseFactory.passwordFailed();
     }
 
 

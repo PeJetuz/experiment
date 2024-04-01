@@ -18,14 +18,14 @@ public class CreateUserInteractorImpl implements CreateUserInteractor {
     public CreateUserInteractorImpl(PolicyFactory policyFactory, UserInfo userInfo,
             CreationUserResponsePresenter responsePresenter) {
         this(policyFactory, userInfo, responsePresenter,
-                new EmptyStringChainValidator(userInfo.name(), responsePresenter::invalidUserNameField,
+                new EmptyStringChainValidator(userInfo.name(), responsePresenter::emptyName,
                         new EmptyStringChainValidator(userInfo.passwordHash(),
-                                responsePresenter::invalidPasswordHashField, Validator.TRUE)));
+                                responsePresenter::emptyPassword, Validator.TRUE)));
     }
 
     public CreateUserInteractorImpl(PolicyFactory policyFactory, UserInfo userInfo,
             CreationUserResponsePresenter responsePresenter, Validator validatorChain) {
-        this.policy = policyFactory.buildCreationPolicy(userInfo, responsePresenter);
+        this.policy = policyFactory.makeCreationPolicy(userInfo, responsePresenter);
         this.responsePresenter = responsePresenter;
         this.validatorChain = validatorChain;
     }

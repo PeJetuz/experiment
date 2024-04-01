@@ -1,9 +1,10 @@
 package my.test.authorization.rules;
 
-import my.test.authorization.domain.api.CreationUserResponseFactory;
+import my.test.authorization.domain.api.CreationUserResponseBuilder;
 import my.test.rest.incomings.controllers.CreationUserResponseModel;
 
-public interface CreationUserResponsePresenter extends CreationUserResponseFactory, CreationUserResponseModel {
+public interface CreationUserResponsePresenter extends
+        CreationUserResponseBuilder, CreationUserResponseModel {
 
     final class Fake implements CreationUserResponsePresenter {
 
@@ -16,22 +17,22 @@ public interface CreationUserResponsePresenter extends CreationUserResponseFacto
         }
 
         @Override
-        public void userAlreadyExists() {
+        public void userExists() {
             userAlreadyExists = true;
         }
 
         @Override
-        public void invalidUserNameField() {
+        public void emptyName() {
             invalidUserNameField = true;
         }
 
         @Override
-        public void invalidPasswordHashField() {
+        public void emptyPassword() {
             invalidPasswordHashField = true;
         }
 
         @Override
-        public UserData success() {
+        public UserInfoBuilder success() {
             return null;
         }
     }

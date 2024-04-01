@@ -41,7 +41,7 @@ public class CreationUserResponseModelImplTest {
         ServerResponseSpy response = new ServerResponseSpy();
         CreationUserResponseModelImpl subj = createModel(result, response);
 
-        subj.userAlreadyExists();
+        subj.userExists();
         subj.send();
 
         assertEquals(Status.FORBIDDEN_403, response.status());
@@ -59,7 +59,7 @@ public class CreationUserResponseModelImplTest {
         ServerResponseSpy response = new ServerResponseSpy();
         CreationUserResponseModelImpl subj = createModel(result, response);
 
-        subj.invalidPasswordHashField();
+        subj.emptyPassword();
         subj.send();
 
         assertEquals(Status.FORBIDDEN_403, response.status());
@@ -72,7 +72,7 @@ public class CreationUserResponseModelImplTest {
         ServerResponseSpy response = new ServerResponseSpy();
         CreationUserResponseModelImpl subj = createModel(result, response);
 
-        subj.invalidUserNameField();
+        subj.emptyName();
         subj.send();
 
         assertEquals(Status.FORBIDDEN_403, response.status());

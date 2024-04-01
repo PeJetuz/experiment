@@ -5,13 +5,14 @@ import io.helidon.webserver.ServerResponse;
 import jakarta.json.bind.Jsonb;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import my.test.authorization.domain.api.CreationUserResponseFactory.UserData;
+import my.test.authorization.domain.api.CreationUserResponseBuilder.UserInfoBuilder;
 import my.test.authorization.rules.CreationUserResponsePresenter;
 import my.test.rest.incomings.controllers.api.dto.Authentication;
 import my.test.rest.incomings.controllers.api.dto.Token;
 import my.test.rest.incomings.controllers.presenters.ErrorMessage;
 
-public class CreationUserResponseModelImpl implements CreationUserResponsePresenter, UserData {
+public class CreationUserResponseModelImpl implements CreationUserResponsePresenter,
+        UserInfoBuilder {
 
     private final Authentication authentication;
     private final ServerResponse response;
@@ -31,7 +32,7 @@ public class CreationUserResponseModelImpl implements CreationUserResponsePresen
     }
 
     @Override
-    public void userAlreadyExists() {
+    public void userExists() {
         this.send = () -> {
             String returnObject = jsonb.toJson(new ErrorMessage("User already exists"));
             response.status(Status.FORBIDDEN_403).send(returnObject);
@@ -39,7 +40,7 @@ public class CreationUserResponseModelImpl implements CreationUserResponsePresen
     }
 
     @Override
-    public void invalidUserNameField() {
+    public void emptyName() {
         this.send = () -> {
             String returnObject = jsonb.toJson(new ErrorMessage("Invalid user name"));
             response.status(Status.FORBIDDEN_403).send(returnObject);
@@ -47,7 +48,7 @@ public class CreationUserResponseModelImpl implements CreationUserResponsePresen
     }
 
     @Override
-    public void invalidPasswordHashField() {
+    public void emptyPassword() {
         this.send = () -> {
             String returnObject = jsonb.toJson(new ErrorMessage("Invalid user password"));
             response.status(Status.FORBIDDEN_403).send(returnObject);
@@ -55,7 +56,7 @@ public class CreationUserResponseModelImpl implements CreationUserResponsePresen
     }
 
     @Override
-    public UserData success() {
+    public UserInfoBuilder success() {
         return this;
     }
 
@@ -70,9 +71,10 @@ public class CreationUserResponseModelImpl implements CreationUserResponsePresen
     }
 
     @Override
-    public void writeTokenExpirationDate(LocalDateTime expirationDateTime) {
+    public void writeTokenExpirationDate(LocalDateTime expiration) {
         authentication.getAccessToken()
-                .setExpirationDateTime(expirationDateTime.atZone(ZoneId.systemDefault()).toOffsetDateTime());
+                .setExpirationDateTime(
+                        expiration.atZone(ZoneId.systemDefault()).toOffsetDateTime());
     }
 
     @Override

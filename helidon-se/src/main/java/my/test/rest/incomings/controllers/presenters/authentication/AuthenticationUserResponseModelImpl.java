@@ -5,13 +5,13 @@ import io.helidon.webserver.ServerResponse;
 import jakarta.json.bind.Jsonb;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import my.test.authorization.domain.api.AuthenticationResponseFactory.UserData;
 import my.test.authorization.rules.AuthenticationResponsePresenter;
 import my.test.rest.incomings.controllers.api.dto.Authentication;
 import my.test.rest.incomings.controllers.api.dto.Token;
 import my.test.rest.incomings.controllers.presenters.ErrorMessage;
 
-public class AuthenticationUserResponseModelImpl implements AuthenticationResponsePresenter, UserData {
+public class AuthenticationUserResponseModelImpl implements AuthenticationResponsePresenter,
+        UserInfoBuilder {
 
     private final Authentication authentication;
     private final ServerResponse response;
@@ -39,7 +39,7 @@ public class AuthenticationUserResponseModelImpl implements AuthenticationRespon
     }
 
     @Override
-    public void incorrectPassword() {
+    public void passwordFailed() {
         this.send = () -> {
             String returnObject = jsonb.toJson(new ErrorMessage("Invalid password"));
             response.status(Status.UNAUTHORIZED_401).send(returnObject);
@@ -47,7 +47,7 @@ public class AuthenticationUserResponseModelImpl implements AuthenticationRespon
     }
 
     @Override
-    public UserData success() {
+    public UserInfoBuilder success() {
         return this;
     }
 
@@ -62,9 +62,10 @@ public class AuthenticationUserResponseModelImpl implements AuthenticationRespon
     }
 
     @Override
-    public void writeTokenExpirationDate(LocalDateTime expirationDateTime) {
+    public void writeTokenExpirationDate(LocalDateTime expiration) {
         authentication.getAccessToken()
-                .setExpirationDateTime(expirationDateTime.atZone(ZoneId.systemDefault()).toOffsetDateTime());
+                .setExpirationDateTime(
+                        expiration.atZone(ZoneId.systemDefault()).toOffsetDateTime());
     }
 
     @Override

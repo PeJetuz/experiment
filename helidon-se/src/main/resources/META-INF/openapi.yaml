@@ -116,7 +116,7 @@ components:
             обладающие максимальным уровнем)
           items:
             type: string
-            example: ["Директор магазина"]
+            example: ["Manager"]
     TokenPair:
       properties:
         accessToken:

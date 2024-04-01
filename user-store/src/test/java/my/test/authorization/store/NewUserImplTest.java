@@ -3,7 +3,7 @@ package my.test.authorization.store;
 import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import my.test.authorization.domain.api.CreationUserResponseFactory;
+import my.test.authorization.domain.api.CreationUserResponseBuilder.CreationUserResponseBuilderSpy;
 import my.test.authorization.domain.api.UserInfo;
 import my.test.authorization.domain.api.store.NewUser.CreationResult;
 import my.test.authorization.store.UserStore.AuthInfoValue;
@@ -18,7 +18,7 @@ public class NewUserImplTest {
 
     @Test
     public void alreadyExists() {
-        CreationUserResponseFactory.Fake factory = new CreationUserResponseFactory.Fake();
+        CreationUserResponseBuilderSpy factory = new CreationUserResponseBuilderSpy();
         NewUserImpl subj = new NewUserImpl(new UserStore.Fake(UserStore.USER_ALREADY_EXISTS), createEmptyUserInfo(),
                 factory);
 
@@ -34,7 +34,7 @@ public class NewUserImplTest {
 
     @Test
     public void success() {
-        CreationUserResponseFactory.Fake factory = new CreationUserResponseFactory.Fake();
+        CreationUserResponseBuilderSpy factory = new CreationUserResponseBuilderSpy();
         String name = "name" + random.nextInt();
         String token = "token" + random.nextInt();
         LocalDateTime expirationTime = LocalDateTime.now();

@@ -1,7 +1,6 @@
 package my.test.authorization.store;
 
 import java.time.LocalDateTime;
-import my.test.authorization.domain.api.AuthenticationResponseFactory;
 import my.test.authorization.domain.api.UserInfo;
 import my.test.authorization.domain.api.store.AuthenticateUser.AuthenticationResult;
 import my.test.authorization.store.UserStore.AuthInfoValue;
@@ -21,7 +20,7 @@ public class AuthenticatedUserImplTest {
 
     @Test
     public void authenticateUserNotFound() {
-        AuthenticationResponseFactory.Fake factory = new AuthenticationResponseFactory.Fake();
+        AuthenticationResponseBuilderSpy factory = new AuthenticationResponseBuilderSpy();
 
         AuthenticationResult result = new AuthenticatedUserImpl(new UserStore.Fake(UserStore.USER_NOF_FOUND),
                 createEmptyUserInfo(), factory).authenticate();
@@ -36,7 +35,7 @@ public class AuthenticatedUserImplTest {
 
     @Test
     public void authenticateIncorrectUserPassword() {
-        AuthenticationResponseFactory.Fake factory = new AuthenticationResponseFactory.Fake();
+        AuthenticationResponseBuilderSpy factory = new AuthenticationResponseBuilderSpy();
 
         AuthenticationResult result = new AuthenticatedUserImpl(new UserStore.Fake(createAuthInfoValue(null)),
                 createEmptyUserInfo(), factory).authenticate();
@@ -52,7 +51,7 @@ public class AuthenticatedUserImplTest {
     @Test
     public void authenticateUserSuccess() {
         LocalDateTime expirationDateTime = LocalDateTime.now();
-        AuthenticationResponseFactory.Fake factory = new AuthenticationResponseFactory.Fake();
+        AuthenticationResponseBuilderSpy factory = new AuthenticationResponseBuilderSpy();
 
         AuthenticationResult result = new AuthenticatedUserImpl(new UserStore.Fake(
                 createAuthInfoValue(expirationDateTime)),
@@ -71,7 +70,7 @@ public class AuthenticatedUserImplTest {
 
     @Test
     public void authenticateUserSuccessUpdateExpirationTimeAndToken() {
-        AuthenticationResponseFactory.Fake factory = new AuthenticationResponseFactory.Fake();
+        AuthenticationResponseBuilderSpy factory = new AuthenticationResponseBuilderSpy();
         AuthInfoValue authInfoValue = createAuthInfoValue(EXPIRED_TOKEN_TIME);
 
         AuthenticationResult result = new AuthenticatedUserImpl(new UserStore.Fake(authInfoValue),

@@ -59,7 +59,7 @@ public class AuthenticationUserResponseModelImplTest {
         ServerResponseSpy response = new ServerResponseSpy();
         AuthenticationUserResponseModelImpl subj = createModel(result, response);
 
-        subj.incorrectPassword();
+        subj.passwordFailed();
         subj.send();
 
         assertEquals(Status.UNAUTHORIZED_401, response.status());

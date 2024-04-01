@@ -1,18 +1,15 @@
 package my.test.eureka;
 
 import java.util.Arrays;
-import my.test.authorization.domain.api.servicebus.LogonEventTransmitter;
-import my.test.authorization.domain.api.servicebus.LogonEventTransmitterBuilder;
+import my.test.authorization.domain.api.servicebus.LoginEventTransmitter;
 import my.test.authorization.domain.impl.PolicyFactoryImpl;
-import my.test.authorization.rules.ResponseFactory;
-import my.test.authorization.rules.impl.ResponseFactoryImpl;
-import my.test.authorization.store.UserMockBuilderImpl;
+import my.test.authorization.store.UserMockFactoryImpl;
 import my.test.eureka.config.KafkaConfiguration;
 import my.test.rest.incomings.controllers.AuthenticationController;
 import my.test.rest.incomings.controllers.api.dto.Authentication;
 import my.test.rest.incomings.controllers.api.dto.Token;
-import my.test.authorization.rules.AuthFactory;
-import my.test.authorization.rules.impl.AuthFactoryImpl;
+import my.test.authorization.rules.InteractorFactory;
+import my.test.authorization.rules.impl.InteractorFactoryImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -52,10 +49,10 @@ public class SpringStarter {
     }
 
     @Bean
-    public AuthFactory authFactory(KafkaConfiguration kafkaConfiguration) {
-        return new AuthFactoryImpl(
-                new PolicyFactoryImpl(new UserMockBuilderImpl(),
-                        new LogonEventTransmitterBuilder.Fake(new LogonEventTransmitter.Fake())));
+    public InteractorFactory authFactory(KafkaConfiguration kafkaConfiguration) {
+        return new InteractorFactoryImpl(
+                new PolicyFactoryImpl(new UserMockFactoryImpl(),
+                        new my.test.authorization.domain.api.servicebus.LoginEventTransmitterBuilder.Stub(new LoginEventTransmitter.Dummy())));
 //                        new LogonEventTransmitterBuilderImpl(kafkaConfiguration.generateKafkaProperties(),
 //                                kafkaConfiguration.getLogonTopicName())));
     }
@@ -66,7 +63,7 @@ public class SpringStarter {
     }
 
     //@Bean
-    public AuthenticationController authenticationsController(AuthFactory authFactory, ResponseFactory responseFactory,
+    public AuthenticationController authenticationsController(InteractorFactory interactorFactory, ResponseFactory responseFactory,
             AutowireCapableBeanFactory beanFactory, GenericWebApplicationContext webappContext,
             @Value("${service1.authenticationsControllerUri}") final String authenticationsControllerUri) {
         final String urlPath = "/api";
@@ -75,8 +72,8 @@ public class SpringStarter {
         @RequestMapping("/api"/*"/${service1.authenticationsControllerUri}"*/)
         class AuthenticationsControllerBean extends AuthenticationController {
 
-            public AuthenticationsControllerBean(AuthFactory authenticationInteractor) {
-                super(authFactory, responseFactory);
+            public AuthenticationsControllerBean(InteractorFactory authenticationInteractor) {
+                super(interactorFactory, responseFactory);
             }
 
             public ResponseEntity<Authentication> login() {
@@ -85,7 +82,7 @@ public class SpringStarter {
             }
         }
 
-        AuthenticationsControllerBean authenticationsControllerBean = new AuthenticationsControllerBean(authFactory);
+        AuthenticationsControllerBean authenticationsControllerBean = new AuthenticationsControllerBean(interactorFactory);
         beanFactory.autowireBean(authenticationsControllerBean);
 
         webappContext.getBeanFactory().registerSingleton("authenticationsController", authenticationsControllerBean);
