@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2023 Vladimir Shapkin
 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met: 1) Redistributions of source code must retain the above
+copyright notice, this list of conditions and the following
+disclaimer. 2) Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following
+disclaimer in the documentation and/or other materials provided
+with the distribution. 3) Neither the name of the Qulice.com nor
+the names of its contributors may be used to endorse or promote
+products derived from this software without specific prior written
+permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -12,15 +41,13 @@
     </parent>
 
     <groupId>my.test</groupId>
-    <packaging>jar</packaging>
     <artifactId>service-bus</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    <packaging>jar</packaging>
     <name>service-bus</name>
     <description>Demo project service bus</description>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testcontainers.version>1.19.5</testcontainers.version>
     </properties>
 
@@ -36,11 +63,21 @@
             <artifactId>kafka-clients</artifactId>
             <version>3.6.1</version>
         </dependency>
+
         <!-- testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -125,13 +162,126 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M9</version>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.0.0-M9</version>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>qulice</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.qulice</groupId>
+                        <artifactId>qulice-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <excludes combine.children="append">
+                                <exclude>checkstyle:/src/test/.*/KafkaTest.*</exclude>
+                                <exclude>pmd:/src/test/.*/KafkaTest.*</exclude>
+                                <exclude>checkstyle:\\src\\test\\.*\\KafkaTest.*</exclude>
+                                <exclude>pmd:\\src\\test\\.*\\KafkaTest.*</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>enforce-versions</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- https://maven.apache.org/enforcer/enforcer-rules/index.html -->
+                                    <rules>
+                                        <banDuplicatePomDependencyVersions />
+                                        <bannedDependencies />
+                                        <reactorModuleConvergence />
+                                        <dependencyConvergence />
+                                        <requireMavenVersion>
+                                            <version>3.8.6</version>
+                                        </requireMavenVersion>
+                                        <requireJavaVersion>
+                                            <version>21</version>
+                                        </requireJavaVersion>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.basepom.maven</groupId>
+                        <artifactId>duplicate-finder-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <printEqualFiles>true</printEqualFiles>
+                                    <failBuildInCaseOfDifferentContentConflict>false</failBuildInCaseOfDifferentContentConflict>
+                                    <failBuildInCaseOfEqualContentConflict>true</failBuildInCaseOfEqualContentConflict>
+                                    <failBuildInCaseOfConflict>false</failBuildInCaseOfConflict>
+                                    <checkCompileClasspath>true</checkCompileClasspath>
+                                    <checkRuntimeClasspath>true</checkRuntimeClasspath>
+                                    <checkTestClasspath>true</checkTestClasspath>
+                                    <skip>false</skip>
+                                    <preferLocal>true</preferLocal>
+                                    <useResultFile>true</useResultFile>
+                                    <resultFileMinClasspathCount>2</resultFileMinClasspathCount>
+                                    <resultFile>${project.build.directory}/duplicate-finder-result.xml</resultFile>
+                                    <ignoredResourcePatterns>
+                                        <ignoredResourcePattern>draftv3/schema</ignoredResourcePattern>
+                                    </ignoredResourcePatterns>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs-maven-plugin</artifactId>
+                        <configuration>
+                            <effort>Max</effort>
+                            <threshold>Low</threshold>
+                            <plugins>
+                                <plugin>
+                                    <groupId>com.h3xstream.findsecbugs</groupId>
+                                    <artifactId>findsecbugs-plugin</artifactId>
+                                    <version>1.12.0</version>
+                                </plugin>
+                            </plugins>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

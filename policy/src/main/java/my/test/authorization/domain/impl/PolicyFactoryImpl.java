@@ -31,8 +31,8 @@ import my.test.authorization.domain.api.CreationPolicy;
 import my.test.authorization.domain.api.PolicyFactory;
 import my.test.authorization.domain.api.UserInfo;
 import my.test.authorization.domain.api.servicebus.CreateNewUserEventTransmitter;
+import my.test.authorization.domain.api.servicebus.EventTransmitterFactory;
 import my.test.authorization.domain.api.servicebus.LoginEventTransmitter;
-import my.test.authorization.domain.api.servicebus.LoginEventTransmitterBuilder;
 import my.test.authorization.domain.api.store.UserFactory;
 import my.test.authorization.domain.events.DomainEvent;
 import my.test.authorization.domain.events.EventDispatcherImpl;
@@ -52,10 +52,10 @@ public final class PolicyFactoryImpl implements PolicyFactory {
     /**
      * Login event transmitter builder.
      */
-    private final LoginEventTransmitterBuilder tbuilder;
+    private final EventTransmitterFactory tbuilder;
 
     public PolicyFactoryImpl(final UserFactory ufactory,
-        final LoginEventTransmitterBuilder tbuilder) {
+        final EventTransmitterFactory tbuilder) {
         this.ufactory = ufactory;
         this.tbuilder = tbuilder;
     }

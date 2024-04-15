@@ -13,6 +13,7 @@ import io.helidon.webserver.Routing;
 import io.helidon.webserver.WebServer;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
+import my.test.authorization.domain.api.servicebus.EventTransmitterFactory;
 import my.test.authorization.domain.api.servicebus.LoginEventTransmitter;
 import my.test.authorization.domain.impl.PolicyFactoryImpl;
 import my.test.authorization.rules.impl.AuthFactoryImpl;
@@ -100,7 +101,7 @@ public final class Main {
                 .register("/greet", greetService)
                 .register("/api", new AuthenticationServiceImpl(
                         new AuthFactoryImpl(new PolicyFactoryImpl(new UserMockFactoryImpl(),
-                                new my.test.authorization.domain.api.servicebus.LoginEventTransmitterBuilder.Stub(new LoginEventTransmitter.Dummy()))),
+                                new EventTransmitterFactory.Stub(new LoginEventTransmitter.Dummy()))),
                         new ResponseFactoryImpl(JSONB)));
 
         return builder.build();

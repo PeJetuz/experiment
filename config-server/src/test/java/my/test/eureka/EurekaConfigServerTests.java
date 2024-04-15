@@ -40,8 +40,8 @@ final class EurekaConfigServerTests {
      *
      * @checkstyle NonStaticMethodCheck (5 lines)
      */
-    @SuppressWarnings("PMD.UncommentedEmptyMethodBody")
     @Test
     void contextLoads() {
+        //do nothing
     }
 }

@@ -1,108 +1,90 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2023 Vladimir Shapkin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package my.test.eureka;
 
 import java.util.Arrays;
-import my.test.authorization.domain.api.servicebus.LoginEventTransmitter;
+import my.test.authorization.domain.api.servicebus.EventTransmitterFactory;
 import my.test.authorization.domain.impl.PolicyFactoryImpl;
-import my.test.authorization.store.UserMockFactoryImpl;
-import my.test.eureka.config.KafkaConfiguration;
-import my.test.rest.incomings.controllers.AuthenticationController;
-import my.test.rest.incomings.controllers.api.dto.Authentication;
-import my.test.rest.incomings.controllers.api.dto.Token;
 import my.test.authorization.rules.InteractorFactory;
 import my.test.authorization.rules.impl.InteractorFactoryImpl;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import my.test.authorization.store.UserMockFactoryImpl;
+import my.test.eureka.config.KafkaConfiguration;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.support.GenericWebApplicationContext;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-
+/**
+ * Spring application starter.
+ *
+ * @since 1.0
+ * @checkstyle NonStaticMethodCheck (100 lines)
+ */
 @SpringBootApplication
 @ComponentScan
 public class SpringStarter {
 
-    public static void main(String[] args) {
+    @SuppressWarnings("PMD.ProhibitPublicStaticMethods")
+    public static void main(final String[] args) {
         SpringApplication.run(SpringStarter.class, args);
     }
 
+    /**
+     * CommandLineRunner.
+     *
+     * @param ctx Application context.
+     * @return CommandLineRunner.
+     */
     @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+    @SuppressWarnings("PMD.SystemPrintln")
+    public CommandLineRunner commandLineRunner(final ApplicationContext ctx) {
         return args -> {
-
             System.out.println("Let's inspect the beans provided by Spring Boot:");
-
-            String[] beanNames = ctx.getBeanDefinitionNames();
-            Arrays.sort(beanNames);
-            for (String beanName : beanNames) {
-                System.out.println(beanName);
+            final String[] beans = ctx.getBeanDefinitionNames();
+            Arrays.sort(beans);
+            for (final String bean : beans) {
+                System.out.println(bean);
             }
-
         };
     }
 
+    /**
+     * InteractorFactory.
+     *
+     * @param kconfig Kafka configuration.
+     * @return InteractorFactory.
+     */
     @Bean
-    public InteractorFactory authFactory(KafkaConfiguration kafkaConfiguration) {
+    public InteractorFactory authFactory(final KafkaConfiguration kconfig) {
         return new InteractorFactoryImpl(
-                new PolicyFactoryImpl(new UserMockFactoryImpl(),
-                        new my.test.authorization.domain.api.servicebus.LoginEventTransmitterBuilder.Stub(new LoginEventTransmitter.Dummy())));
-//                        new LogonEventTransmitterBuilderImpl(kafkaConfiguration.generateKafkaProperties(),
-//                                kafkaConfiguration.getLogonTopicName())));
+            new PolicyFactoryImpl(
+                new UserMockFactoryImpl(),
+                new EventTransmitterFactory.Stub()
+            )
+        );
     }
-
-    @Bean
-    public ResponseFactory responsePresenterFactory() {
-        return new ResponseFactoryImpl();
-    }
-
-    //@Bean
-    public AuthenticationController authenticationsController(InteractorFactory interactorFactory, ResponseFactory responseFactory,
-            AutowireCapableBeanFactory beanFactory, GenericWebApplicationContext webappContext,
-            @Value("${service1.authenticationsControllerUri}") final String authenticationsControllerUri) {
-        final String urlPath = "/api";
-
-        @Controller
-        @RequestMapping("/api"/*"/${service1.authenticationsControllerUri}"*/)
-        class AuthenticationsControllerBean extends AuthenticationController {
-
-            public AuthenticationsControllerBean(InteractorFactory authenticationInteractor) {
-                super(interactorFactory, responseFactory);
-            }
-
-            public ResponseEntity<Authentication> login() {
-                return ResponseEntity.ok(
-                        new Authentication().accessToken(new Token().value("login spring")).username("test spring"));
-            }
-        }
-
-        AuthenticationsControllerBean authenticationsControllerBean = new AuthenticationsControllerBean(interactorFactory);
-        beanFactory.autowireBean(authenticationsControllerBean);
-
-        webappContext.getBeanFactory().registerSingleton("authenticationsController", authenticationsControllerBean);
-        webappContext.getBeansOfType(RequestMappingHandlerMapping.class).forEach((k, v) -> v.afterPropertiesSet());
-//		webappContext.getBeansOfType(RequestMappingHandlerMapping.class).forEach((name, requestMappingHandlerMapping) -> {
-//			requestMappingHandlerMapping.getHandlerMethods().keySet().forEach(requestMappingHandlerMapping::unregisterMapping);
-//			requestMappingHandlerMapping.afterPropertiesSet();
-//		});
-
-        //https://stackoverflow.com/questions/5758504/is-it-possible-to-dynamically-set-requestmappings-in-spring-mvc
-//		RequestMappingInfo requestMappingInfo = RequestMappingInfo
-//				.paths(urlPath)
-//				.methods(RequestMethod.GET)
-//				.produces(MediaType.APPLICATION_JSON_VALUE)
-//				.build();
-//		requestMappingHandlerMapping.
-//				registerMapping(requestMappingInfo, authenticationsControllerBean,
-//						AuthenticationsControllerBean.class.getDeclaredMethod("handleRequests")
-//				);
-        return authenticationsControllerBean;
-    }
-
 }

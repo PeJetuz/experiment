@@ -220,12 +220,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                                     <useResultFile>true</useResultFile>
                                     <resultFileMinClasspathCount>2</resultFileMinClasspathCount>
                                     <resultFile>${project.build.directory}/duplicate-finder-result.xml</resultFile>
-                                    <ignoredResourcePatterns>
-                                        <ignoredResourcePattern>.cache/formatter-maven-cache.properties</ignoredResourcePattern>
-                                        <ignoredResourcePattern>mozilla/public-suffix-list.txt</ignoredResourcePattern>
-                                        <ignoredResourcePattern>about.html</ignoredResourcePattern>
-                                        <ignoredResourcePattern>plugin.properties</ignoredResourcePattern>
-                                    </ignoredResourcePatterns>
                                 </configuration>
                             </execution>
                         </executions>

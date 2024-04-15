@@ -22,28 +22,9 @@
  * SOFTWARE.
  */
 
-package my.test.eureka;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-
 /**
- * Spring application test.
+ * Service bus test cases.
  *
  * @since 1.0
- * @checkstyle NonStaticMethodCheck (100 lines)
  */
-@SpringBootTest(
-    properties = {"spring.config.use-legacy-processing=true", "spring.cloud.config.enabled:false"},
-    webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-    classes = SpringStarter.class
-)
-@AutoConfigureMockMvc
-final class SpringStarterTests {
-
-    @Test
-    void contextLoads() {
-        //do nothing
-    }
-}
+package my.test.authorization.servicebus;

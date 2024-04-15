@@ -26,15 +26,17 @@ package my.test.authorization.servicebus;
 
 import java.util.Properties;
 import my.test.authorization.domain.api.servicebus.CreateNewUserEventTransmitter;
+import my.test.authorization.domain.api.servicebus.EventTransmitterFactory;
 import my.test.authorization.domain.api.servicebus.LoginEventTransmitter;
-import my.test.authorization.domain.api.servicebus.LoginEventTransmitterBuilder;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 
 /**
- * Implementation of LoginEventTransmitterBuilder for kafka.
+ * Implementation of kafka factory.
+ *
+ * @since 1.0
  */
-public final class LoginEventTransmitterBuilderImpl implements LoginEventTransmitterBuilder {
+public final class EventTransmitterFactoryImpl implements EventTransmitterFactory {
 
     /**
      * Kafka producer.
@@ -46,18 +48,25 @@ public final class LoginEventTransmitterBuilderImpl implements LoginEventTransmi
      */
     private final String topic;
 
-    public LoginEventTransmitterBuilderImpl(final Properties config, final String topic) {
-        this.producer = new KafkaProducer<>(config);
+    public EventTransmitterFactoryImpl(final Properties config, final String topic) {
+        this(new KafkaProducer<>(config), topic);
+    }
+
+    public EventTransmitterFactoryImpl(
+        final Producer<String, String> producer,
+        final String topic
+    ) {
+        this.producer = producer;
         this.topic = topic;
     }
 
     @Override
-    public LoginEventTransmitter createLoginEventTransmitter(final String user) {
-        return new LoginEventTransmitterImpl(user, this.producer, this.topic);
+    public LoginEventTransmitter createLoginEventTransmitter() {
+        return new LoginEventTransmitterKafka(this.producer, this.topic);
     }
 
     @Override
-    public CreateNewUserEventTransmitter createNewUserEventTransmitter(final String user) {
+    public CreateNewUserEventTransmitter createNewUserEventTransmitter() {
         return new CreateNewUserEventTransmitter.Dummy();
     }
 }

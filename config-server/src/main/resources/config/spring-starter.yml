@@ -4,7 +4,7 @@ service1:
   authenticationsControllerUri: /api
 springdoc:
   api-docs:
-    path: /javainuse-openapi
+    path: /api
   swagger-ui:
     path: /swagger-ui.html
 authentication:

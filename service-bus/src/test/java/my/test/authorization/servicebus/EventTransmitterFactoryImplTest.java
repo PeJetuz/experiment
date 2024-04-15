@@ -22,28 +22,38 @@
  * SOFTWARE.
  */
 
-package my.test.eureka;
+package my.test.authorization.servicebus;
 
+import java.util.Properties;
+import my.test.authorization.domain.api.servicebus.LoginEventTransmitter;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * Spring application test.
+ * Test cases for EventTransmitterFactoryImpl.
  *
  * @since 1.0
- * @checkstyle NonStaticMethodCheck (100 lines)
  */
-@SpringBootTest(
-    properties = {"spring.config.use-legacy-processing=true", "spring.cloud.config.enabled:false"},
-    webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-    classes = SpringStarter.class
-)
-@AutoConfigureMockMvc
-final class SpringStarterTests {
+final class EventTransmitterFactoryImplTest {
 
     @Test
-    void contextLoads() {
-        //do nothing
+    void canCreate() {
+        final EventTransmitterFactoryImpl subj =
+            new EventTransmitterFactoryImpl(this.generateKafkaProperties(), null);
+        Assertions.assertThat(subj.createLoginEventTransmitter())
+            .isInstanceOf(LoginEventTransmitter.class);
+    }
+
+    private Properties generateKafkaProperties() {
+        final Properties props = new Properties();
+        props.put("bootstrap.servers", "localhost:9092");
+        props.put("acks", "all");
+        props.put("retries", 0);
+        props.put("batch.size", 16_384);
+        props.put("linger.ms", 1);
+        props.put("buffer.memory", 335_544);
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        return props;
     }
 }

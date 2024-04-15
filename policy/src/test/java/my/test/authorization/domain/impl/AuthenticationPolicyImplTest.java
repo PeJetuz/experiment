@@ -27,7 +27,7 @@ package my.test.authorization.domain.impl;
 import java.util.Map;
 import my.test.authorization.domain.api.AuthenticationPolicy;
 import my.test.authorization.domain.api.UserInfo;
-import my.test.authorization.domain.api.servicebus.LoginEventTransmitterBuilder;
+import my.test.authorization.domain.api.servicebus.EventTransmitterFactory;
 import my.test.authorization.domain.api.store.AuthenticateUser;
 import my.test.authorization.domain.api.store.UserFactory;
 import my.test.authorization.domain.events.DomainEvent;
@@ -60,7 +60,7 @@ final class AuthenticationPolicyImplTest {
                 new AuthenticateUser.Stub(event),
                 null
             ),
-            new LoginEventTransmitterBuilder.Stub()
+            new EventTransmitterFactory.Stub()
         ).makeAuthenticatePolicy(
             createEmptyInfo(),
             Map.of(

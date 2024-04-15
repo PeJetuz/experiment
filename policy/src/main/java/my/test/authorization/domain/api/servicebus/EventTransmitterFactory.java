@@ -22,32 +22,43 @@
  * SOFTWARE.
  */
 
-package my.test.eureka;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+package my.test.authorization.domain.api.servicebus;
 
 /**
- * Unit test for spring eureka server.
+ * Interface for instantiating a Service Bus to send a logon or create a new user event.
  *
  * @since 1.0
  */
-@SpringBootTest(
-    properties = {"spring.config.use-legacy-processing=true", "spring.cloud.config.enabled:false"},
-    webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-    classes = AppEurekaServer.class
-)
-@AutoConfigureMockMvc
-final class AppTest {
+public interface EventTransmitterFactory {
+
     /**
-     * Try to run server.
-     * The method is empty because it starts the spring context.
+     * Creates a service bus instance to dispatch a logon event.
      *
-     * @checkstyle NonStaticMethodCheck (5 lines)
+     * @return Returns the transmitter for sending the login event.
      */
-    @Test
-    void contextLoads() {
-        //do nothing
+    LoginEventTransmitter createLoginEventTransmitter();
+
+    /**
+     * Creates a service bus instance to dispatch the new user creation event.
+     *
+     * @return Returns the transmitter for sending the new user creation event.
+     */
+    CreateNewUserEventTransmitter createNewUserEventTransmitter();
+
+    record Stub(LoginEventTransmitter ltransmitter, CreateNewUserEventTransmitter crtransmitter)
+        implements EventTransmitterFactory {
+        public Stub() {
+            this(new LoginEventTransmitter.Dummy(), new CreateNewUserEventTransmitter.Dummy());
+        }
+
+        @Override
+        public LoginEventTransmitter createLoginEventTransmitter() {
+            return this.ltransmitter;
+        }
+
+        @Override
+        public CreateNewUserEventTransmitter createNewUserEventTransmitter() {
+            return this.crtransmitter;
+        }
     }
 }

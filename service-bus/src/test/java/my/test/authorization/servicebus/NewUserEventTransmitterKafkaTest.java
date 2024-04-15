@@ -22,43 +22,35 @@
  * SOFTWARE.
  */
 
-package my.test.authorization.domain.api.servicebus;
+package my.test.authorization.servicebus;
+
+import java.util.Map;
+import java.util.function.Consumer;
+import my.test.authorization.domain.events.DomainEvent;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
- * Interface for instantiating a Service Bus to send a logon event.
+ * Test for CreateNewUserEventTransmitter.
  *
  * @since 1.0
  */
-public interface LoginEventTransmitterBuilder {
+final class NewUserEventTransmitterKafkaTest {
+    /**
+     * Stub of producer.
+     */
+    private final StubProducer producer = new StubProducer();
 
     /**
-     * Creates a service bus instance to dispatch a logon event.
-     *
-     * @return Returns the transmitter for sending the login event.
+     * Event map.
      */
-    LoginEventTransmitter createLoginEventTransmitter();
+    private final Map<String, Consumer<DomainEvent>> subscribers =
+        new EventTransmitterFactoryImpl(this.producer, "topic")
+            .createNewUserEventTransmitter()
+            .subscribers();
 
-    /**
-     * Creates a service bus instance to dispatch the new user creation event.
-     *
-     * @return Returns the transmitter for sending the new user creation event.
-     */
-    CreateNewUserEventTransmitter createNewUserEventTransmitter();
-
-    record Stub(LoginEventTransmitter ltransmitter, CreateNewUserEventTransmitter crtransmitter)
-        implements LoginEventTransmitterBuilder {
-        public Stub() {
-            this(new LoginEventTransmitter.Dummy(), new CreateNewUserEventTransmitter.Dummy());
-        }
-
-        @Override
-        public LoginEventTransmitter createLoginEventTransmitter() {
-            return this.ltransmitter;
-        }
-
-        @Override
-        public CreateNewUserEventTransmitter createNewUserEventTransmitter() {
-            return this.crtransmitter;
-        }
+    @Test
+    void sendNewUserEvent() {
+        Assertions.assertThat(this.subscribers).isNotNull();
     }
 }
