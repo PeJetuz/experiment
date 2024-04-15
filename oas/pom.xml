@@ -47,11 +47,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
     <name>oas</name>
     <description>Demo project oas</description>
 
-    <properties>
-        <version.openapi-generator>7.4.0</version.openapi-generator>
-    </properties>
-
-
     <pluginRepositories>
         <pluginRepository>
             <id>sonatype-snapshots</id>
@@ -239,7 +234,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.9</version>
                 <configuration>
                     <excludes>
                         <exclude>my/test/rest/incomings/controllers/api/**</exclude>
@@ -312,7 +306,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>${version.openapi-generator}</version>
+                <version>${openapi-generator.version}</version>
                 <executions>
                     <execution>
                         <id>incoming-eureka</id>
@@ -440,17 +434,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                     <plugin>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs-maven-plugin</artifactId>
-                        <configuration>
-                            <effort>Max</effort>
-                            <threshold>Low</threshold>
+                        <configuration combine.children="append">
                             <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
-                            <plugins>
-                                <plugin>
-                                    <groupId>com.h3xstream.findsecbugs</groupId>
-                                    <artifactId>findsecbugs-plugin</artifactId>
-                                    <version>1.12.0</version>
-                                </plugin>
-                            </plugins>
                         </configuration>
                         <executions>
                             <execution>

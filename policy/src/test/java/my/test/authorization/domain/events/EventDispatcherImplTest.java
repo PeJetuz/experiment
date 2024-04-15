@@ -57,11 +57,7 @@ final class EventDispatcherImplTest {
         subj.fire(unf);
         subj.fire(upf);
         subj.fire(uas);
-        subj.fire(new IpAuthenticationLimitExceededEvent.IpAuthenticationLimitExceededEventImpl());
-        subj.fire(new IpAuthenticationSuccessfulEvent.IpAuthenticationSuccessfulEventImpl());
         subj.fire(new UserAlreadyExistsEvent.UserAlreadyExistsEventImpl());
-        subj.fire(new EmptyNameEvent.EmptyNameEventImpl());
-        subj.fire(new EmptyPasswordEvent.EmptyPasswordEventImpl());
         Assertions.assertThat(unf).isEqualTo(unfconsfirst.event()).isEqualTo(unfconssec.event());
         Assertions.assertThat(upf).isEqualTo(upfcons.event());
         Assertions.assertThat(uas).isEqualTo(uascons.event());

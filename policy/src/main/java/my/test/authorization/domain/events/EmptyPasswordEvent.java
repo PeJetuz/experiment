@@ -31,7 +31,7 @@ package my.test.authorization.domain.events;
  */
 public interface EmptyPasswordEvent extends DomainEvent {
     default String eventName() {
-        return EmptyNameEvent.class.getName();
+        return EmptyPasswordEvent.class.getName();
     }
 
     record EmptyPasswordEventImpl() implements EmptyPasswordEvent {
