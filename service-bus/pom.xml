@@ -82,24 +82,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>kafka</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -199,76 +181,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                                         </ports>
                                     </run>
                                 </image>
-                                <!-- work -->
-                                <!--                        <image>-->
-                                <!--                            <alias>kafka</alias>-->
-                                <!--                            <name>${kafka.image}</name>-->
-                                <!--                            <run>-->
-                                <!--                                <hostname>kafka</hostname>-->
-                                <!--                                <envPropertyFile>it/bitnami-kafka-server.env</envPropertyFile>-->
-                                <!--                                &lt;!&ndash; Local development port.-->
-                                <!--                                     Add the local address of the developer's computer to the bitnami-kafka-server.env&ndash;&gt;-->
-                                <!--                                <ports>-->
-                                <!--                                    <port>29094:29094</port>-->
-                                <!--                                </ports>-->
-                                <!--                            </run>-->
-                                <!--                        </image>-->
-                                <!--                        <image>-->
-                                <!--                            <alias>integration-test</alias>-->
-                                <!--                            <name>%g/integration-test</name>-->
-                                <!--                            <build>-->
-                                <!--                                <contextDir>${project.basedir}/it</contextDir>-->
-                                <!--                                <dockerFile>Dockerfile</dockerFile>-->
-                                <!--                            </build>-->
-                                <!--                            <run>-->
-                                <!--                                <hostname>integration-test</hostname>-->
-                                <!--                                <env>-->
-                                <!--                                    <BOOTSTRAP_SERVERS>kafka:9094</BOOTSTRAP_SERVERS>-->
-                                <!--                                </env>-->
-                                <!--                                <dependsOn>-->
-                                <!--                                    <container>kafka</container>-->
-                                <!--                                </dependsOn>-->
-                                <!--                                <links>-->
-                                <!--                                    <link>kafka</link>-->
-                                <!--                                </links>-->
-                                <!--                            </run>-->
-                                <!--                        </image>-->
-                                <!-- work end -->
-
-
-                                <!--                        <image>-->
-                                <!--                            <alias>kafka</alias>-->
-                                <!--                            <name>${kafka.image}</name>-->
-                                <!--                            <build>-->
-                                <!--                                <user>1001</user>-->
-                                <!--                                <healthCheck>-->
-                                <!--                                    <cmd><![CDATA[ kafka-topics.sh &#45;&#45;bootstrap-server localhost:9092 &#45;&#45;topic hc &#45;&#45;create &#45;&#45;if-not-exists && kafka-topics.sh &#45;&#45;bootstrap-server localhost:9092 &#45;&#45;topic hc &#45;&#45;describe ]]></cmd>-->
-                                <!--                                    <interval>10s</interval>-->
-                                <!--                                    <timeout>20s</timeout>-->
-                                <!--                                    <retries>5</retries>-->
-                                <!--                                    <startPeriod>10s</startPeriod>-->
-                                <!--                                </healthCheck>-->
-                                <!--                            </build>-->
-                                <!--                            <run>-->
-                                <!--                                <hostname>kafka</hostname>-->
-                                <!--                                <envPropertyFile>it/bitnami-kafka-server.env</envPropertyFile>-->
-                                <!--                                <entrypoint>-->
-                                <!--                                    <shell>/opt/bitnami/scripts/kafka/run.sh</shell>-->
-                                <!--                                </entrypoint>-->
-                                <!--                                <ports>-->
-                                <!--                                    &lt;!&ndash; Port mappings: Container internal port (which must be exposed) will be-->
-                                <!--                                   dynamically mapped and this (random) port will be assigned to the maven variable-->
-                                <!--                                   ${tomcat.port}. Multiple port mapping can be specified here&ndash;&gt;-->
-                                <!--                                    <port>9092:9092</port>-->
-                                <!--                                    <port>9094:9094</port>-->
-                                <!--                                </ports>-->
-                                <!--&lt;!&ndash;                                <wait>&ndash;&gt;-->
-                                <!--&lt;!&ndash;                                    <healthy>true</healthy>&ndash;&gt;-->
-                                <!--&lt;!&ndash;                                    &lt;!&ndash; ... but at max 10 seconds &ndash;&gt;&ndash;&gt;-->
-                                <!--&lt;!&ndash;                                    <time>10000</time>&ndash;&gt;-->
-                                <!--&lt;!&ndash;                                </wait>&ndash;&gt;-->
-                                <!--                            </run>-->
-                                <!--                        </image>-->
                             </images>
                         </configuration>
                         <executions>
