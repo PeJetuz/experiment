@@ -43,8 +43,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
         <module>policy</module>
         <module>user-store</module>
         <module>service-bus</module>
-        <module>helidon-se</module>
-        <module>helidon-mp</module>
         <module>config-server</module>
         <module>eureka-server</module>
         <module>starter</module>
