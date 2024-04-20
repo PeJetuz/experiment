@@ -1,58 +1,112 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2023 Vladimir Shapkin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package my.test.eureka.config;
 
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * Implementation a kafka configuration provider.
+ *
+ * @since 1.0
+ */
 @Component
-public class KafkaConfigurationImpl implements KafkaConfiguration {
+@SuppressWarnings("PMD.FinalFieldCouldBeStatic")
+public final class KafkaConfigurationImpl implements KafkaConfiguration {
 
+    /**
+     * Server address.
+     */
     @Value("${kafka.bootstrap.servers}")
-    private String serversUri = "localhost:9092";
+    private final String servers = "localhost:9092";
+
+    /**
+     * Acknowledgements flag.
+     */
     @Value("${kafka.acks}")
-    private String acks = "all";
+    private final String acks = "all";
+
+    /**
+     * Number of retries.
+     */
     @Value("${kafka.retries}")
-    private String retries = "0";
+    private final String retries = "0";
+
+    /**
+     * Message batch size.
+     */
     @Value("${kafka.batch.size}")
-    private String batchSize = "16384";
+    private final String bsize = "16384";
+
+    /**
+     * Waiting between sending packets.
+     */
     @Value("${kafka.linger.ms}")
-    private String lingerMs = "1";
+    private final String linger = "1";
+
+    /**
+     * Buffer size.
+     */
     @Value("${kafka.buffer.memory}")
-    private String bufferMemory = "409600";
+    private final String buffer = "409600";
+
+    /**
+     * Key serializer.
+     */
     @Value("${kafka.key.serializer}")
-    private String keySerializer = "org.apache.kafka.common.serialization.StringSerializer";
+    private final String kserializer = "org.apache.kafka.common.serialization.StringSerializer";
+
+    /**
+     * Value serializer.
+     */
     @Value("${kafka.value.serializer}")
-    private String valueSerializer = "org.apache.kafka.common.serialization.StringSerializer";
+    private final String vserializer = "org.apache.kafka.common.serialization.StringSerializer";
+
+    /**
+     * Topic.
+     */
     @Value("${authentication.logon.topic.name}")
-    private String logonTopicName = "logon";
+    private final String topic = "logon";
 
-    public Properties generateKafkaProperties() {
-        Properties kafkaProperties = new Properties();
-        kafkaProperties.put("bootstrap.servers", serversUri);
-
-        //Set acknowledgements for producer requests.
-        kafkaProperties.put("acks", acks);
-
-        //If the request fails, the producer can automatically retry,
-        kafkaProperties.put("retries", Integer.valueOf(retries));
-
-        //Specify buffer size in config
-        kafkaProperties.put("batch.size", Integer.valueOf(batchSize));
-
-        //Reduce the no of requests less than 0
-        kafkaProperties.put("linger.ms", Long.valueOf(lingerMs));
-
-        //The buffer.memory controls the total amount of memory available to the producer for buffering.
-        kafkaProperties.put("buffer.memory", Long.valueOf(bufferMemory));
-
-        kafkaProperties.put("key.serializer", keySerializer);
-
-        kafkaProperties.put("value.serializer", valueSerializer);
-        return kafkaProperties;
+    @Override
+    public Properties kafkaProperties() {
+        final Properties kprop = new Properties();
+        kprop.put("bootstrap.servers", this.servers);
+        kprop.put("acks", this.acks);
+        kprop.put("retries", Integer.valueOf(this.retries));
+        kprop.put("batch.size", Integer.valueOf(this.bsize));
+        kprop.put("linger.ms", Long.valueOf(this.linger));
+        kprop.put("buffer.memory", Long.valueOf(this.buffer));
+        kprop.put("key.serializer", this.kserializer);
+        kprop.put("value.serializer", this.vserializer);
+        return kprop;
     }
 
     @Override
-    public String getLogonTopicName() {
-        return logonTopicName;
+    public String topicName() {
+        return this.topic;
     }
 }

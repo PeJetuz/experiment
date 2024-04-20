@@ -4,5 +4,7 @@ server:
 
 app:
   greeting: "Hello"
+openapi:
+  web-context: /openapi
 
 

@@ -1,72 +1,83 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2023 Vladimir Shapkin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package my.test.rest.incomings.controllers;
 
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import my.test.authorization.rules.AuthenticateUserInteractor;
-import my.test.authorization.rules.ResponseFactory;
+import my.test.authorization.domain.impl.PolicyFactorySpy;
+import my.test.authorization.rules.impl.InteractorFactoryImpl;
 import my.test.rest.incomings.controllers.api.dto.AuthInfo;
 import my.test.rest.incomings.controllers.api.dto.Authentication;
 import my.test.rest.incomings.controllers.api.dto.TokenPair;
-import my.test.authorization.rules.AuthFactory;
-import my.test.authorization.rules.CreateUserInteractor;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+/**
+ * AuthenticationController tests.
+ *
+ * @since 1.0
+ */
+final class AuthenticationControllerTest {
 
-public class AuthenticationControllerTest {
+    /**
+     * Controller under test.
+     */
+    private final AuthenticationController controller;
 
-    private Random random = ThreadLocalRandom.current();
-    private String userName = "username" + random.nextLong();
-    private String passwordHash = "passwordHash" + random.nextLong();
-
-    @Test
-    public void checkLogin() {
-        ResponseEntity<Authentication> renderModel = ResponseEntity.ok(new Authentication());
-        AuthenticationController controller = new AuthenticationController(new AuthFactory.Fake(
-                new AuthenticateUserInteractor.Fake(new AuthenticationResponseModel.Fake(renderModel)), null),
-                new ResponseFactory.Fake());
-
-        ResponseEntity<Authentication> result = controller.login(new AuthInfo());
-
-        assertEquals(renderModel, result);
+    AuthenticationControllerTest() {
+        this.controller = new AuthenticationController(
+            new InteractorFactoryImpl(new PolicyFactorySpy())
+        );
     }
 
     @Test
-    public void createUser() {
-        ResponseEntity<Authentication> renderModel = ResponseEntity.ok(new Authentication());
-        AuthenticationController controller = new AuthenticationController(new AuthFactory.Fake(null,
-                new CreateUserInteractor.Fake(new CreationUserResponseModel.Fake(renderModel))),
-                new ResponseFactory.Fake());
-        AuthInfo authInfo = new AuthInfo();
-
-        ResponseEntity<Authentication> result = controller.create(authInfo);
-
-        assertEquals(renderModel, result);
+    void checkLoginSuccess() {
+        final ResponseEntity<Authentication> result = this.controller.login(new AuthInfo());
+        Assertions.assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(result.getBody()).isNotNull();
     }
 
     @Test
-    public void logout() {
-        ResponseEntity<Authentication> renderModel = ResponseEntity.ok(new Authentication());
-        AuthenticationController controller = new AuthenticationController(new AuthFactory.Fake(
-                new AuthenticateUserInteractor.Fake(new AuthenticationResponseModel.Fake(renderModel)), null),
-                new ResponseFactory.Fake());
-
-        ResponseEntity<Void> result = controller.logout();
-
-        assertNotNull(result);
+    void createUser() {
+        final AuthInfo auth = new AuthInfo();
+        final ResponseEntity<Authentication> result = this.controller.create(auth);
+        Assertions.assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(result.getBody()).isNotNull();
     }
 
     @Test
-    public void refreshTokens() {
-        ResponseEntity<Authentication> renderModel = ResponseEntity.ok(new Authentication());
-        AuthenticationController controller = new AuthenticationController(new AuthFactory.Fake(
-                new AuthenticateUserInteractor.Fake(new AuthenticationResponseModel.Fake(renderModel)), null),
-                new ResponseFactory.Fake());
+    void logout() {
+        final ResponseEntity<Void> result = this.controller.logout();
+        Assertions.assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_IMPLEMENTED);
+        Assertions.assertThat(result.getBody()).isNull();
+    }
 
-        ResponseEntity<TokenPair> result = controller.refreshTokens();
-
-        assertNotNull(result);
+    @Test
+    void refreshTokens() {
+        final ResponseEntity<TokenPair> result = this.controller.refreshTokens();
+        Assertions.assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_IMPLEMENTED);
+        Assertions.assertThat(result.getBody()).isNull();
     }
 }

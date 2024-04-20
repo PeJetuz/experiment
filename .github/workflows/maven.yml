@@ -25,10 +25,14 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '21'
+        maven-version: '3.9.6'
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -f pom.xml -Pqulice,integrotest clean install 
+      run: mvn -Pqulice,integrotest -f ./helidon-se/pom.xml clean install
+      run: mvn -Pqulice,integrotest -f ./helidon-mp/pom.xml clean install
+      
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     #- name: Update dependency graph
