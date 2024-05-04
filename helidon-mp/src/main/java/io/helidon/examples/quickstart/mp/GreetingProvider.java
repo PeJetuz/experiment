@@ -1,35 +1,73 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2023 Vladimir Shapkin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 package io.helidon.examples.quickstart.mp;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
+import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * Provider for greeting message.
+ *
+ * @since 1.0
  */
 @ApplicationScoped
 public class GreetingProvider {
-    private final AtomicReference<String> message = new AtomicReference<>();
+
+    /**
+     * Message.
+     */
+    private final AtomicReference<String> message;
 
     /**
      * Create a new greeting provider, reading the message from configuration.
      *
-     * @param message greeting to use
+     * @param message Greeting to use.
      */
+    @SuppressWarnings("PMD.ConstructorOnlyInitializesOrCallOtherConstructors")
     @Inject
-    public GreetingProvider(@ConfigProperty(name = "app.greeting") String message) {
+    public GreetingProvider(@ConfigProperty(name = "app.greeting") final String message) {
+        this.message = new AtomicReference<>();
         this.message.set(message);
     }
 
+    /**
+     * Message.
+     *
+     * @return Message.
+     */
     String getMessage() {
-        return message.get();
+        return this.message.get();
     }
 
-    void setMessage(String message) {
-        this.message.set(message);
+    /**
+     * Set message.
+     * @param msg Message.
+     */
+    void setMessage(final String msg) {
+        this.message.set(msg);
     }
 }
