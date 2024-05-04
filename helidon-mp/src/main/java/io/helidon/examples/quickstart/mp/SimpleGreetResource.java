@@ -58,8 +58,7 @@ public class SimpleGreetResource {
     /**
      * Counter description.
      */
-    private static final String COUNTER_DESC =
-        "Counts personalized GET operations";
+    private static final String COUNTER_DESC = "Counts personalized GET operations";
 
     /**
      * Timer name.
