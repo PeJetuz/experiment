@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FindBugsFilter>
+  <Class name="~my.test.rest.incomings.controllers.api.dto\.[^.]+"/>
+  <Class name="~my.test.rest.incomings.controllers.api\.[^.]+"/>
+</FindBugsFilter>
