@@ -3,4 +3,5 @@
 <FindBugsFilter>
   <Class name="~my.test.rest.incomings.controllers.api.dto\.[^.]+"/>
   <Class name="~my.test.rest.incomings.controllers.api\.[^.]+"/>
+  <Class name="my.test.rest.incomings.controllers.RFC3339DateFormat"/>
 </FindBugsFilter>

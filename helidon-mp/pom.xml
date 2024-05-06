@@ -12,6 +12,7 @@
     <groupId>io.helidon.examples</groupId>
     <artifactId>helidon-quickstart-mp</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <properties>
         <openapi-generator.version>7.5.0</openapi-generator.version>
@@ -120,6 +121,12 @@
             <artifactId>hamcrest-all</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+            <version>3.25.3</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -193,54 +200,59 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.2.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.openapitools</groupId>-->
-<!--                <artifactId>openapi-generator-maven-plugin</artifactId>-->
-<!--                <version>${openapi-generator.version}</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>incoming-helidon_mp</id>-->
-<!--                        <goals>-->
-<!--                            <goal>generate</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <inputSpec>-->
-<!--                                ${project.basedir}/src/main/resources/META-INF/openapi.yaml-->
-<!--                            </inputSpec>-->
-<!--                            <generatorName>java-helidon-server</generatorName>-->
-<!--                            <library>mp</library>-->
-<!--                            <generateApiDocumentation>false</generateApiDocumentation>-->
-<!--                            <apiPackage>my.test.rest.incomings.controllers.api</apiPackage>-->
-<!--                            <generateModelDocumentation>false</generateModelDocumentation>-->
-<!--                            <modelPackage>my.test.rest.incomings.controllers.api.dto</modelPackage>-->
-<!--                            <generateApiTests>false</generateApiTests>-->
-<!--                            <generateModelTests>false</generateModelTests>-->
-<!--                            <typeMappings>-->
-<!--                                <typeMapping>x-date=LocalDate</typeMapping>-->
-<!--                                <typeMapping>x-date-time=LocalDateTime</typeMapping>-->
-<!--                            </typeMappings>-->
-<!--                            <configOptions>-->
-<!--                                <library>mp</library>-->
-<!--                                <useTags>true</useTags>-->
-<!--                                <dateLibrary>java8</dateLibrary>-->
-<!--                                <serializationLibrary>jackson</serializationLibrary>-->
-<!--                                <helidonVersion>4.0.0</helidonVersion>-->
-<!--&lt;!&ndash;                                <jsr310>true</jsr310>&ndash;&gt;-->
-<!--                                <interfaceOnly>true</interfaceOnly>-->
-<!--                                <skipDefaultInterface>false</skipDefaultInterface>-->
-<!--                                <hideGenerationTimestamp>true</hideGenerationTimestamp>-->
-<!--                            </configOptions>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator.version}</version>
+                <executions>
+                    <execution>
+                        <id>incoming-helidon_mp</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/META-INF/openapi.yaml
+                            </inputSpec>
+                            <generatorName>java-helidon-server</generatorName>
+                            <library>mp</library>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <apiPackage>my.test.rest.incomings.controllers.api</apiPackage>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <modelPackage>my.test.rest.incomings.controllers.api.dto</modelPackage>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <templateDirectory>${project.basedir}/src/main/resources/openapi/generator/templates/7.5.0</templateDirectory>
+                            <typeMappings>
+                                <typeMapping>x-date=LocalDate</typeMapping>
+                                <typeMapping>x-date-time=LocalDateTime</typeMapping>
+                            </typeMappings>
+                            <configOptions>
+                                <fullProject>false</fullProject>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <serializationLibrary>jackson</serializationLibrary>
+                                <helidonVersion>4.0.0</helidonVersion>
+                                <interfaceOnly>true</interfaceOnly>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -276,7 +288,9 @@
                             <license>file:${basedir}/LICENSE.txt</license>
                             <excludes combine.children="append">
                                 <exclude>checkstyle:.*/src/main/java/my/test/rest/incomings/controllers/api/dto/.*</exclude>
+                                <exclude>checkstyle:.*/src/test/java/RestApplication.*</exclude>
                                 <exclude>pmd:.*/src/main/java/my/test/rest/incomings/controllers/api/dto/.*</exclude>
+                                <exclude>pmd:.*/src/test/java/RestApplication.*</exclude>
                                 <exclude>duplicatefinder:.*</exclude>
                                 <exclude>dependencies:.*</exclude>
                             </excludes>

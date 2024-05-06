@@ -52,7 +52,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <helidon.version>4.0.7</helidon.version>
         <helidon.media.version>3.2.7</helidon.media.version>
-        <openapi-generator.version>7.4.0</openapi-generator.version>
+        <openapi-generator.version>7.5.0</openapi-generator.version>
         <spring-boot.version>3.0.5</spring-boot.version>
         <spring-cloud.version>2022.0.1</spring-cloud.version>
         <timestamp>${maven.build.timestamp}</timestamp>

@@ -212,45 +212,6 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>3.2.5</version>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.openapitools</groupId>-->
-<!--                <artifactId>openapi-generator-maven-plugin</artifactId>-->
-<!--                <version>${openapi-generator.version}</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>incoming-helidon_se</id>-->
-<!--                        <goals>-->
-<!--                            <goal>generate</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <inputSpec>-->
-<!--                                ${project.basedir}/src/main/resources/oas/Authentications.yaml-->
-<!--                            </inputSpec>-->
-<!--                            <generatorName>java-helidon-server</generatorName>-->
-<!--                            <library>se</library>-->
-<!--                            <generateApiDocumentation>false</generateApiDocumentation>-->
-<!--                            <apiPackage>my.test.rest.incomings.controllers.api</apiPackage>-->
-<!--                            <generateModelDocumentation>false</generateModelDocumentation>-->
-<!--                            <modelPackage>my.test.rest.incomings.controllers.api.dto</modelPackage>-->
-<!--                            <generateApiTests>false</generateApiTests>-->
-<!--                            <generateModelTests>false</generateModelTests>-->
-<!--                            <typeMappings>-->
-<!--                                <typeMapping>x-date=LocalDate</typeMapping>-->
-<!--                                <typeMapping>x-date-time=LocalDateTime</typeMapping>-->
-<!--                            </typeMappings>-->
-<!--                            <configOptions>-->
-<!--                                <library>se</library>-->
-<!--                                <useTags>true</useTags>-->
-<!--                                <dateLibrary>java8</dateLibrary>-->
-<!--                                <jsr310>true</jsr310>-->
-<!--                                <interfaceOnly>true</interfaceOnly>-->
-<!--                                <skipDefaultInterface>false</skipDefaultInterface>-->
-<!--                                <hideGenerationTimestamp>true</hideGenerationTimestamp>-->
-<!--                            </configOptions>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
