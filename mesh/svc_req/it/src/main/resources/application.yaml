@@ -1,0 +1,6 @@
+server:
+  port: 8282
+  host: 0.0.0.0
+metrics:
+  rest-request:
+    enabled: false

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FindBugsFilter>
+  <Class name="mesh.test.rest.incomings.controllers.RFC3339DateFormat"/>
+  <Class name="mesh.test.rest.incomings.controllers.api.ApiException"/>
+</FindBugsFilter>

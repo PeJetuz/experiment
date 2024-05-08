@@ -1,0 +1,4 @@
+security:
+  enabled: false
+
+svc_ping/mp-rest/url: http://localhost:8282/test

@@ -1,0 +1,60 @@
+openapi: 3.0.0
+info:
+  title: Service mesh test
+  description: >
+    `Design First`, `Validated`
+  version: 1.0.0
+  contact:
+    name: My Test Team
+    url: https://wiki.mail.ru/display/my_test
+    email: my_test@mail.ru
+servers:
+  - url: /api
+    description: Starting path of my test servers url
+security:
+  - basicAuth: []
+tags:
+  - name: Ping
+    description: Ping controller
+paths:
+  /ping:
+    get:
+      tags:
+        - Ping
+      summary: Set new value, if count > 10 then return '400'
+      operationId: ping
+      responses:
+        '200':
+          description: return request parameter value
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Error
+  /count:
+    get:
+      tags:
+        - Ping
+      summary: Return current counter
+      operationId: count
+      responses:
+        '200':
+          description: return current counter
+          content:
+            application/json:
+              schema:
+                type: string
+  /reset:
+    get:
+      tags:
+        - Ping
+      summary: Reset counter
+      operationId: reset
+      responses:
+        '200':
+          description: return old value
+          content:
+            application/json:
+              schema:
+                type: string
