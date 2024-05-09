@@ -53,8 +53,13 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <helidon.version>4.0.7</helidon.version>
-        <helidon.media.version>3.2.7</helidon.media.version>
         <openapi-generator.version>7.5.0</openapi-generator.version>
+        <version.plugin.surefire>3.2.5</version.plugin.surefire>
+        <version.plugin.failsafe>3.2.5</version.plugin.failsafe>
+        <version.plugin.spotbugs>4.8.2.0</version.plugin.spotbugs>
+        <version.plugin.duplicate-finder>2.0.1</version.plugin.duplicate-finder>
+        <version.plugin.enforcer>3.4.1</version.plugin.enforcer>
+        <version.plugin.qulice>0.22.2</version.plugin.qulice>
         <timestamp>${maven.build.timestamp}</timestamp>
         <jdk.version>21</jdk.version>
         <maven.compiler.source>21</maven.compiler.source>
@@ -99,30 +104,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>5.9.2</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.9.2</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.google.truth</groupId>
-                <artifactId>truth</artifactId>
-                <version>1.4.2</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>junit</groupId>
-                        <artifactId>junit</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>3.25.3</version>
@@ -132,78 +113,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                 <groupId>com.google.code.findbugs</groupId>
                 <artifactId>annotations</artifactId>
                 <version>3.0.1</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.code.findbugs</groupId>
-                        <artifactId>jsr305</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>net.jcip</groupId>
-                        <artifactId>jcip-annotations</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
-            <!-- OpenAPI -->
-<!--            <dependency>-->
-<!--                <groupId>jakarta.validation</groupId>-->
-<!--                <artifactId>jakarta.validation-api</artifactId>-->
-<!--                <version>3.0.2</version>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>jakarta.annotation</groupId>-->
-<!--                <artifactId>jakarta.annotation-api</artifactId>-->
-<!--                <version>3.0.0</version>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>jakarta.servlet</groupId>-->
-<!--                <artifactId>jakarta.servlet-api</artifactId>-->
-<!--                <version>6.0.0</version>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>jakarta.xml.bind</groupId>-->
-<!--                <artifactId>jakarta.xml.bind-api</artifactId>-->
-<!--                <version>4.0.2</version>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>com.fasterxml.jackson.core</groupId>-->
-<!--                <artifactId>jackson-databind</artifactId>-->
-<!--                <version>2.14.2</version>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>com.fasterxml.jackson.core</groupId>-->
-<!--                <artifactId>jackson-core</artifactId>-->
-<!--                <version>2.14.2</version>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>com.fasterxml.jackson.core</groupId>-->
-<!--                <artifactId>jackson-annotations</artifactId>-->
-<!--                <version>2.14.2</version>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>io.swagger.core.v3</groupId>-->
-<!--                <artifactId>swagger-core-jakarta</artifactId>-->
-<!--                <version>2.2.8</version>-->
-<!--                <scope>compile</scope>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>io.swagger.core.v3</groupId>-->
-<!--                <artifactId>swagger-annotations-jakarta</artifactId>-->
-<!--                <version>2.2.8</version>-->
-<!--                <scope>compile</scope>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>io.swagger.core.v3</groupId>-->
-<!--                <artifactId>swagger-models-jakarta</artifactId>-->
-<!--                <version>2.2.8</version>-->
-<!--                <scope>compile</scope>-->
-<!--            </dependency>-->
-            <!-- OpenAPI -->
-<!--            <dependency>-->
-<!--                <groupId>io.micrometer</groupId>-->
-<!--                <artifactId>micrometer-observation</artifactId>-->
-<!--                <version>1.10.5</version>-->
-<!--            </dependency>-->
-        </dependencies>
+         </dependencies>
     </dependencyManagement>
 
     <build>
@@ -212,7 +123,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                 <plugin>
                     <groupId>com.qulice</groupId>
                     <artifactId>qulice-maven-plugin</artifactId>
-                    <version>0.22.2</version>
+                    <version>${version.plugin.qulice}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>
@@ -221,23 +132,18 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.12.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.4.1</version>
+                    <version>${version.plugin.enforcer}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.basepom.maven</groupId>
                     <artifactId>duplicate-finder-maven-plugin</artifactId>
-                    <version>2.0.1</version>
+                    <version>${version.plugin.duplicate-finder}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>4.8.2.0</version>
+                    <version>${version.plugin.spotbugs}</version>
                     <configuration>
                         <effort>Max</effort>
                         <threshold>Low</threshold>
@@ -256,21 +162,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                             <version>4.8.3</version>
                         </dependency>
                     </dependencies>
-                </plugin>
-                <plugin>
-                    <groupId>org.sonarsource.scanner.maven</groupId>
-                    <artifactId>sonar-maven-plugin</artifactId>
-                    <version>3.11.0.3922</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.2.5</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.2.5</version>
                 </plugin>
             </plugins>
         </pluginManagement>

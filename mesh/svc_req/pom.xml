@@ -15,10 +15,10 @@
     <packaging>jar</packaging>
 
     <properties>
-        <openapi-generator.version>7.5.0</openapi-generator.version>
         <version.jackson.databind.nullable>0.2.6</version.jackson.databind.nullable>
-        <docker.autoPull>off</docker.autoPull>
-        <docker.skip.save>true</docker.skip.save>
+        <version.plugin.copy-rename>1.0</version.plugin.copy-rename>
+<!--        <docker.autoPull>off</docker.autoPull>-->
+<!--        <docker.skip.save>true</docker.skip.save>-->
     </properties>
 
     <dependencies>
@@ -112,13 +112,11 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
-            <version>3.25.3</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
-            <version>3.0.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.code.findbugs</groupId>
@@ -137,7 +135,6 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.9</version>
                 <executions>
                     <execution>
                         <id>default-prepare-agent</id>
@@ -235,7 +232,7 @@
             <plugin>
                 <groupId>com.coderplus.maven.plugins</groupId>
                 <artifactId>copy-rename-maven-plugin</artifactId>
-                <version>1.0</version>
+                <version>${version.plugin.copy-rename}</version>
                 <executions>
                     <execution>
                         <id>copy-oas</id>
@@ -408,7 +405,6 @@
                     <plugin>
                         <groupId>com.qulice</groupId>
                         <artifactId>qulice-maven-plugin</artifactId>
-                        <version>0.22.2</version>
                         <configuration>
                             <license>file:${basedir}/LICENSE.txt</license>
                             <excludes combine.children="append">
@@ -433,7 +429,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>3.4.1</version>
                         <executions>
                             <execution>
                                 <id>enforce-versions</id>
@@ -446,7 +441,6 @@
                                     <rules>
                                         <banDuplicatePomDependencyVersions />
                                         <bannedDependencies />
-                                        <reactorModuleConvergence />
                                         <dependencyConvergence />
                                         <requireMavenVersion>
                                             <version>3.8.6</version>
@@ -462,7 +456,6 @@
                     <plugin>
                         <groupId>org.basepom.maven</groupId>
                         <artifactId>duplicate-finder-maven-plugin</artifactId>
-                        <version>2.0.1</version>
                         <executions>
                             <execution>
                                 <id>default</id>
@@ -490,7 +483,6 @@
                     <plugin>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs-maven-plugin</artifactId>
-                        <version>4.8.2.0</version>
                         <configuration combine.children="append">
                             <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
                         </configuration>

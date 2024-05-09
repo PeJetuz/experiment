@@ -25,10 +25,7 @@
 package mesh.test.rest.incomings.controllers;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Request;
 import mesh.test.rest.incomings.controllers.api.PingService;
 
 /**
