@@ -82,6 +82,15 @@ public class PingResourceTest {
     }
 
     @Test
+    void pingTwo() {
+        final String count = this.target
+            .path("api/pinghdr")
+            .request()
+            .get(String.class);
+        Assertions.assertThat(count).isEqualTo("1");
+    }
+
+    @Test
     void count() {
         final String count = this.target
             .path("api/count")

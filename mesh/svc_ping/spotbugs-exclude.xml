@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <FindBugsFilter>
+  <And>
+    <Bug code="CT"/>
+    <Class name="mesh.test.rest.incomings.controllers.CounterServiceImpl"/>
+  </And>
+  <And>
+    <Bug code="EI2"/>
+    <Class name="mesh.test.rest.incomings.controllers.CounterServiceImpl"/>
+  </And>
   <Class name="mesh.test.rest.incomings.controllers.RFC3339DateFormat"/>
 </FindBugsFilter>

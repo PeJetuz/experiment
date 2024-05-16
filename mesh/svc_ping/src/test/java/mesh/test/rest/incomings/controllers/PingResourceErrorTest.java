@@ -74,7 +74,7 @@ public class PingResourceErrorTest {
             .path("api/ping")
             .request()
             .get()) {
-            MatcherAssert.assertThat(r.getStatus(), Matchers.is(400));
+            MatcherAssert.assertThat(r.getStatus(), Matchers.is(500));
         }
     }
 

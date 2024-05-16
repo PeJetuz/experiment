@@ -31,6 +31,7 @@ import io.helidon.microprofile.testing.junit5.AddExtension;
 import io.helidon.microprofile.testing.junit5.DisableDiscovery;
 import io.helidon.microprofile.testing.junit5.HelidonTest;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 import mesh.test.rest.incomings.controllers.api.ApiException;
@@ -58,6 +59,7 @@ import org.junit.jupiter.api.Test;
 @HelidonTest
 @DisableDiscovery
 @AddBean(value = TransmitterServiceResourceErrorTest.PingApiStub.class)
+@AddBean(value = TransmitterServiceResourceErrorTest.PingHdrApiStub.class)
 @AddBean(value = TransmitterServiceResource.class)
 @AddBean(value = MyExceptionMapper.class)
 @AddBean(value = ApiExceptionMapper.class)
@@ -92,6 +94,16 @@ public class TransmitterServiceResourceErrorTest {
         }
     }
 
+    @Test
+    void pinghdrError() {
+        try (Response r = this.target
+            .path("api/callpinghdr")
+            .request()
+            .get()) {
+            MatcherAssert.assertThat(r.getStatus(), Matchers.is(400));
+        }
+    }
+
     /**
      * Stub for PingApi.
      *
@@ -113,6 +125,21 @@ public class TransmitterServiceResourceErrorTest {
         @Override
         public String reset() {
             return "3";
+        }
+    }
+
+    /**
+     * Print headers implementation @RestClient.
+     *
+     * @since 1.0
+     * @checkstyle DesignForExtensionCheck (10 lines)
+     */
+    @RestClient
+    public static class PingHdrApiStub implements PingHdrApi {
+
+        @Override
+        public String pinghdr() throws ApiException, ProcessingException {
+            throw new ApiException(new ResponseStub());
         }
     }
 }

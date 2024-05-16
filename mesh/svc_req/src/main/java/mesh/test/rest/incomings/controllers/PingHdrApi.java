@@ -22,25 +22,30 @@
  * SOFTWARE.
  */
 
-package mesh.test.rest.incomings.exceptions;
+package mesh.test.rest.incomings.controllers;
 
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.ExceptionMapper;
-import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.Produces;
+import mesh.test.rest.incomings.controllers.api.ApiException;
+import mesh.test.rest.incomings.controllers.api.ApiExceptionMapper;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /**
- * Exception mapper.
+ * Client api for calling Ping.ping2.
  *
  * @since 1.0
- * @checkstyle DesignForExtensionCheck (40 lines)
  */
-@Provider
-public class MyExceptionMapper implements ExceptionMapper<MyException> {
-    @Override
-    public Response toResponse(final MyException exception) {
-        return Response
-            .status(Response.Status.INTERNAL_SERVER_ERROR)
-            .entity(exception.getMessage())
-            .build();
-    }
+@RegisterClientHeaders
+@RegisterRestClient(configKey = "svc_ping")
+@RegisterProvider(ApiExceptionMapper.class)
+@Path("")
+public interface PingHdrApi {
+    @GET
+    @Path("/pinghdr")
+    @Produces("application/json")
+    String pinghdr() throws ApiException, ProcessingException;
 }

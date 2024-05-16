@@ -4,20 +4,11 @@ server:
 metrics:
   rest-request:
     enabled: false
-tracing:
-  service: "svc_ping"
-  paths:
-    - path: "/favicon.ico"
-      enabled: false
-    - path: "/metrics"
-      enabled: false
-    - path: "/health"
-      enabled: false
 org.eclipse.microprofile.rest.client.propagateHeaders: >-
   x-request-id,x-b3-traceid,x-b3-spanid,x-b3-parentspanid,x-b3-sampled,x-b3-flags,
   x-ot-span-context,x-datadog-trace-id,x-datadog-parent-id,x-datadog-sampling-priority,
   traceparent,tracestate,x-cloud-trace-context,grpc-trace-bin,sw8,
   user-agent,cookie,authorization,jwt
 
-# export SVC_PING_MP_REST_URL=http://localhost:8080/api
-svc_ping/mp-rest/url: http://ping_service/api
+# export SVC_PING_MP_REST_URL=http://ping-app:8080/api
+svc_ping/mp-rest/url: http://localhost:8080/api

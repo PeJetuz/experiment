@@ -24,8 +24,16 @@
 
 package mesh.test.rest.incomings.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import java.util.HashMap;
+import java.util.Map;
 import mesh.test.rest.incomings.controllers.api.PingService;
 
 /**
@@ -39,6 +47,11 @@ import mesh.test.rest.incomings.controllers.api.PingService;
 public class PingResource implements PingService {
 
     /**
+     * Log.
+     */
+    private static final System.Logger LOG = System.getLogger(CounterServiceImpl.class.getName());
+
+    /**
      * Counter.
      */
     private final CounterService counter;
@@ -50,6 +63,22 @@ public class PingResource implements PingService {
 
     @Override
     public String ping() {
+        return String.valueOf(this.counter.ping());
+    }
+
+    /**
+     * Ping test.
+     *
+     * @param headers Http headers.
+     * @return Counter from CounterService.ping.
+     */
+    @GET
+    @Path("/pinghdr")
+    @Produces("application/json")
+    public String pingTwo(@Context final HttpHeaders headers) throws JsonProcessingException {
+        final Map<String, String> hdrs = new HashMap<>();
+        headers.getRequestHeaders().forEach((key, value) -> hdrs.put(key, value.getFirst()));
+        LOG.log(System.Logger.Level.INFO, new ObjectMapper().writeValueAsString(hdrs));
         return String.valueOf(this.counter.ping());
     }
 

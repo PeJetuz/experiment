@@ -1,0 +1,43 @@
+
+# 1st stage, build the app
+FROM container-registry.oracle.com/java/openjdk:21 as build
+
+# Install maven
+WORKDIR /usr/share
+RUN set -x && \
+    curl -O https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz && \
+    tar -xvf apache-maven-*-bin.tar.gz  && \
+    rm apache-maven-*-bin.tar.gz && \
+    mv apache-maven-* maven && \
+    ln -s /usr/share/maven/bin/mvn /bin/
+
+WORKDIR /req
+
+# Create a first layer to cache the "Maven World" in the local repository.
+# Incremental docker builds will always resume after that, unless you update
+# the pom
+ADD svc_api/src svc_api/src
+ADD svc_api/pom.xml svc_api/pom.xml
+ADD svc_req/pom.xml svc_req/pom.xml
+ADD pom.xml .
+
+RUN mvn install -f svc_api/pom.xml
+
+# Do the Maven build!
+# Incremental docker builds will resume here when you change sources
+ADD svc_req/src svc_req/src
+RUN mvn package -f svc_req/pom.xml -DskipTests
+
+RUN echo "done!"
+
+# 2nd stage, build the runtime image
+FROM container-registry.oracle.com/java/openjdk:21
+WORKDIR /req
+
+# Copy the binary built in the 1st stage
+COPY --from=build /req/svc_req/target/svc_req.jar ./
+COPY --from=build /req/svc_req/target/libs ./libs
+
+CMD ["java", "-jar", "svc_req.jar"]
+
+EXPOSE 8081

@@ -25,8 +25,11 @@
 package mesh.test.rest.incomings.controllers;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicLong;
 import mesh.test.rest.incomings.exceptions.MyException;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * Counter service implementation.
@@ -38,12 +41,33 @@ import mesh.test.rest.incomings.exceptions.MyException;
 public class CounterServiceImpl implements CounterService {
 
     /**
+     * Log.
+     */
+    private static final System.Logger LOG = System.getLogger(CounterServiceImpl.class.getName());
+
+    /**
      * Counter.
      */
     private final AtomicLong counter;
 
-    public CounterServiceImpl() {
-        this.counter = new AtomicLong(1);
+    /**
+     * Delay when an error occurs.
+     */
+    private final Delay delay;
+
+    @Inject
+    public CounterServiceImpl(
+        @ConfigProperty(name = "counterservice.delay") final Integer cnt
+    ) {
+        this(
+            new AtomicLong(1),
+            () -> Thread.sleep(Duration.ofSeconds(cnt))
+        );
+    }
+
+    public CounterServiceImpl(final AtomicLong cnt, final Delay rdelay) {
+        this.counter = cnt;
+        this.delay = rdelay;
     }
 
     @Override
@@ -59,11 +83,42 @@ public class CounterServiceImpl implements CounterService {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public long ping() {
         final long current = this.counter.getAndIncrement();
+        LOG.log(System.Logger.Level.TRACE, String.format("Old counter = %d", current));
         if (current > 10 && current < 15) {
+            LOG.log(
+                System.Logger.Level.ERROR,
+                String.format(
+                    "Error on counter = %d",
+                    current
+                )
+            );
+            try {
+                this.delay.run();
+            } catch (final InterruptedException exception) {
+                LOG.log(
+                    System.Logger.Level.ERROR,
+                    String.format(
+                        "Error on counter = %d, interrupted: %s",
+                        current,
+                        exception.getMessage()
+                    )
+                );
+                throw new RuntimeException("Delay interrupted", exception);
+            }
             throw new MyException(current);
         }
         return current;
+    }
+
+    /**
+     * Wrapper for sleep.
+     *
+     * @since 1.0
+     */
+    interface Delay {
+        void run() throws InterruptedException;
     }
 }

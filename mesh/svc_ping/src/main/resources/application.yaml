@@ -4,12 +4,5 @@ server:
 metrics:
   rest-request:
     enabled: false
-tracing:
-  service: "svc_ping"
-  paths:
-    - path: "/favicon.ico"
-      enabled: false
-    - path: "/metrics"
-      enabled: false
-    - path: "/health"
-      enabled: false
+counterservice:
+  delay: 5

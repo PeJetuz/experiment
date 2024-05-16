@@ -24,6 +24,7 @@
 
 package mesh.test.rest.incomings.controllers;
 
+import java.util.concurrent.atomic.AtomicLong;
 import mesh.test.rest.incomings.exceptions.MyException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,12 @@ final class CounterServiceImplTest {
     /**
      * Object under test.
      */
-    private final CounterServiceImpl subj = new CounterServiceImpl();
+    private final CounterServiceImpl subj = new CounterServiceImpl(0);
+
+    @Test
+    void canCreate() {
+        Assertions.assertThat(new CounterServiceImpl(0)).isNotNull();
+    }
 
     @Test
     void count() {
@@ -69,5 +75,22 @@ final class CounterServiceImplTest {
                 .isInstanceOf(MyException.class);
         }
         Assertions.assertThat(this.subj.ping()).isEqualTo(15);
+    }
+
+    @Test
+    void pingDelayError() {
+        final CounterServiceImpl srv = new CounterServiceImpl(
+            new AtomicLong(1), () -> {
+            throw new InterruptedException();
+        });
+        for (int cnt = 1; cnt < 11; cnt += 1) {
+            Assertions.assertThat(srv.ping()).isEqualTo(cnt);
+        }
+        for (int cnt = 1; cnt < 5; cnt += 1) {
+            Assertions.assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(srv::ping)
+                .isInstanceOf(RuntimeException.class);
+        }
+        Assertions.assertThat(srv.ping()).isEqualTo(15);
     }
 }

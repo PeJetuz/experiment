@@ -1,0 +1,23 @@
+docker build -t svc_ping -f Dockerfile.svc_ping .
+#docker run --rm -p 8080:8080 svc_ping:latest
+docker build -t svc_req -f Dockerfile.svc_req .
+#docker run --rm -p 8080:8080 svc_req:latest
+
+### Verify connectivity to cluster
+```
+#kubectl cluster-info                        # Verify which cluster
+```
+
+kubectl get pods                                        # Wait for quickstart pod to be RUNNING
+kubectl port-forward service/req-app 8080:8080          # Forward service port to 8080
+#istioctl dashboard kiali
+
+#net utils
+#kubectl run -t -i --rm --image amouat/network-utils testnet bash
+#kubectl get svc istio-ingressgateway -n istio-system
+#export INGRESS_NAME=istio-ingressgateway
+#export INGRESS_NS=istio-system
+#kubectl get svc "$INGRESS_NAME" -n "$INGRESS_NS"
+#kubectl describe svc istio-ingressgateway -n istio-system - opened port
+
+

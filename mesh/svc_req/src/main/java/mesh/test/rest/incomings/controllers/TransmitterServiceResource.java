@@ -24,8 +24,16 @@
 
 package mesh.test.rest.incomings.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import java.util.HashMap;
+import java.util.Map;
 import mesh.test.rest.incomings.controllers.api.ApiException;
 import mesh.test.rest.incomings.controllers.api.PingApi;
 import mesh.test.rest.incomings.controllers.api.TransmitterService;
@@ -43,13 +51,28 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 public class TransmitterServiceResource implements TransmitterService {
 
     /**
-     * Counter.
+     * Log.
+     */
+    private static final System.Logger LOG =
+        System.getLogger(TransmitterServiceResource.class.getName());
+
+    /**
+     * Ping counter.
      */
     private final PingApi ping;
 
+    /**
+     * Ping counter with header printing.
+     */
+    private final PingHdrApi pinghdr;
+
     @Inject
-    public TransmitterServiceResource(@RestClient final PingApi png) {
+    public TransmitterServiceResource(
+        @RestClient final PingApi png,
+        @RestClient final PingHdrApi pnghdr
+    ) {
         this.ping = png;
+        this.pinghdr = pnghdr;
     }
 
     @Override
@@ -57,6 +80,7 @@ public class TransmitterServiceResource implements TransmitterService {
         try {
             return this.ping.count();
         } catch (final ApiException aex) {
+            LOG.log(System.Logger.Level.ERROR, aex);
             throw new MyException(aex.getResponse(), aex);
         }
     }
@@ -66,6 +90,22 @@ public class TransmitterServiceResource implements TransmitterService {
         try {
             return this.ping.ping();
         } catch (final ApiException aex) {
+            LOG.log(System.Logger.Level.ERROR, aex);
+            throw new MyException(aex.getResponse(), aex);
+        }
+    }
+
+    @GET
+    @Path("/callpinghdr")
+    @Produces("application/json")
+    public String callpinghdr(@Context final HttpHeaders headers) throws JsonProcessingException {
+        final Map<String, String> hdrs = new HashMap<>();
+        headers.getRequestHeaders().forEach((key, value) -> hdrs.put(key, value.getFirst()));
+        LOG.log(System.Logger.Level.INFO, new ObjectMapper().writeValueAsString(hdrs));
+        try {
+            return this.pinghdr.pinghdr();
+        } catch (final ApiException aex) {
+            LOG.log(System.Logger.Level.ERROR, aex);
             throw new MyException(aex.getResponse(), aex);
         }
     }

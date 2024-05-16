@@ -31,7 +31,9 @@ import io.helidon.microprofile.testing.junit5.AddExtension;
 import io.helidon.microprofile.testing.junit5.DisableDiscovery;
 import io.helidon.microprofile.testing.junit5.HelidonTest;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.WebTarget;
+import mesh.test.rest.incomings.controllers.api.ApiException;
 import mesh.test.rest.incomings.controllers.api.PingApi;
 import org.assertj.core.api.Assertions;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -52,6 +54,7 @@ import org.junit.jupiter.api.Test;
 @HelidonTest
 @DisableDiscovery
 @AddBean(value = TransmitterServiceResourceTest.PingApiStub.class)
+@AddBean(value = TransmitterServiceResourceTest.PingHdrApiStub.class)
 @AddBean(value = TransmitterServiceResource.class)
 @AddExtension(ServerCdiExtension.class)
 @AddExtension(JaxRsCdiExtension.class)
@@ -82,6 +85,15 @@ public class TransmitterServiceResourceTest {
         Assertions.assertThat(count).isIn("2");
     }
 
+    @Test
+    void pinghdr() {
+        final String count = this.target
+            .path("api/callpinghdr")
+            .request()
+            .get(String.class);
+        Assertions.assertThat(count).isIn("4");
+    }
+
     /**
      * Stub for PingApi.
      *
@@ -103,6 +115,21 @@ public class TransmitterServiceResourceTest {
         @Override
         public String reset() {
             return "3";
+        }
+    }
+
+    /**
+     * Print headers implementation @RestClient.
+     *
+     * @since 1.0
+     * @checkstyle DesignForExtensionCheck (10 lines)
+     */
+    @RestClient
+    public static class PingHdrApiStub implements PingHdrApi {
+
+        @Override
+        public String pinghdr() throws ApiException, ProcessingException {
+            return "4";
         }
     }
 }

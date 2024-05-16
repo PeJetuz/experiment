@@ -49,6 +49,7 @@ import java.util.Map;
 import mesh.test.rest.incomings.controllers.api.ApiException;
 import mesh.test.rest.incomings.controllers.api.ApiExceptionMapper;
 import mesh.test.rest.incomings.controllers.api.PingApi;
+import mesh.test.rest.incomings.controllers.api.ResponseStub;
 import mesh.test.rest.incomings.exceptions.MyExceptionMapper;
 import org.assertj.core.api.Assertions;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
@@ -74,6 +75,7 @@ import org.junit.jupiter.api.Test;
 @AddBean(value = MyExceptionMapper.class)
 @AddBean(value = ApiExceptionMapper.class)
 @AddBean(value = TransmitterServiceResourcePropagateHeaderTest.PingStub.class)
+@AddBean(value = TransmitterServiceResourcePropagateHeaderTest.PingHdrApiStub.class)
 @AddExtension(ServerCdiExtension.class)
 @AddExtension(JaxRsCdiExtension.class)
 @AddExtension(CdiComponentProvider.class)
@@ -197,6 +199,21 @@ public class TransmitterServiceResourcePropagateHeaderTest {
         @Override
         public String reset() throws ApiException, ProcessingException {
             return this.proxy.reset();
+        }
+    }
+
+    /**
+     * Print headers implementation @RestClient.
+     *
+     * @since 1.0
+     * @checkstyle DesignForExtensionCheck (10 lines)
+     */
+    @RestClient
+    public static class PingHdrApiStub implements PingHdrApi {
+
+        @Override
+        public String pinghdr() throws ApiException, ProcessingException {
+            throw new ApiException(new ResponseStub());
         }
     }
 }

@@ -1,0 +1,227 @@
+#######################################
+# Request service
+#######################################
+kind: Service
+apiVersion: v1
+metadata:
+  name: req-app
+  labels:
+    app: req-app
+    service: req-app
+spec:
+  selector:
+    app: req-app
+  ports:
+  - port: 8080
+    name: http
+    targetPort: 8081
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: req-acc
+  labels:
+    account: req-app
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: req-app-v1
+  labels:
+    app: req-app
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: req-app
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: req-app
+        version: v1
+    spec:
+      serviceAccountName: req-acc
+      containers:
+      - name: req-app
+        image: svc_req
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8081
+        env:
+        - name: SVC_PING_MP_REST_URL
+          value: http://ping-app:8080/api/v1
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: req-app-v2
+  labels:
+    app: req-app
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: req-app
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: req-app
+        version: v2
+    spec:
+      serviceAccountName: req-acc
+      containers:
+      - name: req-app
+        image: svc_req
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8081
+        env:
+        - name: SVC_PING_MP_REST_URL
+          value: http://ping-app:8080/api/v2
+---
+#######################################
+# Ping service
+#######################################
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: ping-app
+spec:
+  hosts:
+  - ping-app
+  http:
+  - match:
+    - uri:
+        prefix: /api/v1
+    rewrite:
+      uri: /api
+    route:
+      - destination:
+          host: ping-app
+          subset: v1
+    retries:
+      attempts: 3
+      perTryTimeout: 1s
+      retryOn: 5xx
+  - match:
+    - uri:
+        prefix: /api/v2
+    rewrite:
+      uri: /api
+    route:
+      - destination:
+          host: ping-app
+          subset: v2
+    retries:
+      attempts: 3
+      perTryTimeout: 1s   #request timeout before retrying
+      retryOn: 5xx
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: ping-app
+spec:
+  host: ping-app
+  trafficPolicy:
+    outlierDetection:
+      splitExternalLocalOriginErrors: true
+      consecutiveLocalOriginFailures: 1 # timeout exceeded
+      consecutive5xxErrors: 2
+      maxEjectionPercent: 100
+      interval: 5m
+      baseEjectionTime: 1m
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ping-app
+  labels:
+    app: ping-app
+    service: ping-app
+spec:
+  ports:
+  - port: 8080
+    name: http
+  selector:
+    app: ping-app
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ping-acc
+  labels:
+    account: ping-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ping-app-v1
+  labels:
+    app: ping-app
+    version: v1
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: ping-app
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: ping-app
+        version: v1
+    spec:
+      serviceAccountName: ping-acc
+      containers:
+      - name: ping-app
+        image: svc_ping
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: COUNTERSERVICE_DELAY
+          value: "5"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ping-app-v2
+  labels:
+    app: ping-app
+    version: v2
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: ping-app
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: ping-app
+        version: v2
+    spec:
+      serviceAccountName: ping-acc
+      containers:
+      - name: ping-app
+        image: svc_ping
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: COUNTERSERVICE_DELAY
+          value: "5"
+---
