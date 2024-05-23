@@ -34,7 +34,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
     <parent>
         <groupId>io.helidon.applications</groupId>
         <artifactId>helidon-mp</artifactId>
-        <version>4.0.7</version>
+        <version>4.0.8</version>
         <relativePath/>
     </parent>
 
@@ -52,7 +52,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <helidon.version>4.0.7</helidon.version>
+        <helidon.version>4.0.8</helidon.version>
         <openapi-generator.version>7.5.0</openapi-generator.version>
         <version.plugin.surefire>3.2.5</version.plugin.surefire>
         <version.plugin.failsafe>3.2.5</version.plugin.failsafe>

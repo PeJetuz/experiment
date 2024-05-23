@@ -11,6 +11,7 @@ docker build -t svc_req -f Dockerfile.svc_req .
 kubectl get pods                                        # Wait for quickstart pod to be RUNNING
 kubectl port-forward service/req-app 8080:8080          # Forward service port to 8080
 #istioctl dashboard kiali
+#istioctl dashboard jaeger
 
 #net utils
 #kubectl run -t -i --rm --image amouat/network-utils testnet bash

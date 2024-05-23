@@ -27,12 +27,22 @@ package mesh.test.rest.incomings.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.helidon.microprofile.config.ConfigCdiExtension;
 import io.helidon.microprofile.server.JaxRsCdiExtension;
 import io.helidon.microprofile.server.ServerCdiExtension;
+import io.helidon.microprofile.telemetry.TelemetryCdiExtension;
 import io.helidon.microprofile.testing.junit5.AddBean;
 import io.helidon.microprofile.testing.junit5.AddExtension;
 import io.helidon.microprofile.testing.junit5.DisableDiscovery;
 import io.helidon.microprofile.testing.junit5.HelidonTest;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
+import io.opentelemetry.context.propagation.ContextPropagators;
+import io.opentelemetry.context.propagation.TextMapPropagator;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -79,6 +89,8 @@ import org.junit.jupiter.api.Test;
 @AddExtension(ServerCdiExtension.class)
 @AddExtension(JaxRsCdiExtension.class)
 @AddExtension(CdiComponentProvider.class)
+@AddExtension(TelemetryCdiExtension.class)
+@AddExtension(ConfigCdiExtension.class)
 public class TransmitterServiceResourcePropagateHeaderTest {
 
     /**
@@ -90,46 +102,65 @@ public class TransmitterServiceResourcePropagateHeaderTest {
     @SuppressWarnings("PMD.AvoidAccessToStaticMembersViaThis")
     @Test
     void ping() throws JsonProcessingException {
-        final Map<String, String> expresult =
-            TransmitterServiceResourcePropagateHeaderTest.headers();
-        final MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>(expresult);
+        final OpenTelemetry telemetry = OpenTelemetrySdk.builder()
+            .setPropagators(
+                ContextPropagators.create(
+                    TextMapPropagator.composite(
+                        W3CTraceContextPropagator.getInstance(),
+                        W3CBaggagePropagator.getInstance()
+                    )
+                )
+            ).buildAndRegisterGlobal();
+        final Tracer tracer = telemetry.getTracer(
+            "instrumentation-scope-name",
+            "instrumentation-scope-version"
+        );
+        final Span span = tracer.spanBuilder("test").startSpan();
+        final MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>(
+            TransmitterServiceResourcePropagateHeaderTest.headers(
+                span.getSpanContext().getTraceId(),
+                span.getSpanContext().getSpanId()
+            )
+        );
         final String resp = this.target
             .path("api/callping")
             .request()
             .headers(headers)
             .get(String.class);
-        final Map<String, String> result = new ObjectMapper().readValue(
+        span.end();
+        final MultivaluedMap<String, Object> result = new ObjectMapper().readValue(
             resp,
-            new TypeReference<Map<String, String>>() {
+            new TypeReference<MultivaluedHashMap<String, Object>>() {
             }
         );
-        expresult.remove("x-ot-span-context");
-        expresult.remove("traceparent");
+        headers.remove("x-ot-span-context");
+        headers.remove("traceparent");
         result.remove("Accept");
         result.remove("User-Agent");
         result.remove("Connection");
         result.remove("Host");
-        Assertions.assertThat(result).containsExactlyInAnyOrderEntriesOf(expresult);
+        result.remove("traceparent");
+        Assertions.assertThat(result).containsExactlyInAnyOrderEntriesOf(headers);
     }
 
-    private static Map<String, String> headers() {
-        final Map<String, String> hdr = new HashMap<>();
-        hdr.put("x-request-id", "x-request-id");
-        hdr.put("x-b3-traceid", "x-b3-traceid");
-        hdr.put("x-b3-spanid", "x-b3-spanid");
-        hdr.put("x-b3-parentspanid", "x-b3-parentspanid");
-        hdr.put("x-b3-sampled", "x-b3-sampled");
-        hdr.put("x-b3-flags", "x-b3-flags");
-        hdr.put("x-ot-span-context", "x-ot-span-context");
-        hdr.put("x-datadog-trace-id", "x-datadog-trace-id");
-        hdr.put("x-datadog-parent-id", "x-datadog-parent-id");
-        hdr.put("x-datadog-sampling-priority", "x-datadog-sampling-priority");
-        hdr.put("traceparent", "traceparent");
-        hdr.put("tracestate", "tracestate");
-        hdr.put("x-cloud-trace-context", "x-cloud-trace-context");
-        hdr.put("grpc-trace-bin", "grpc-trace-bin");
-        hdr.put("sw8", "sw8");
-        hdr.put("jwt", "jwt");
+    private static MultivaluedMap<String, Object> headers(final String trace, final String span) {
+        final String trc = String.format("00-%s-%s-01", trace, span);
+        final MultivaluedMap<String, Object> hdr = new MultivaluedHashMap<>();
+        hdr.add("x-request-id", "9da8bce3-bb8a-9175-b4a1-9582ce062072");
+        hdr.add("x-b3-traceid", "x-b3-traceid");
+        hdr.add("x-b3-spanid", "x-b3-spanid");
+        hdr.add("x-b3-parentspanid", "x-b3-parentspanid");
+        hdr.add("x-b3-sampled", "x-b3-sampled");
+        hdr.add("x-b3-flags", "x-b3-flags");
+        hdr.add("x-ot-span-context", "x-ot-span-context");
+        hdr.add("x-datadog-trace-id", "x-datadog-trace-id");
+        hdr.add("x-datadog-parent-id", "x-datadog-parent-id");
+        hdr.add("x-datadog-sampling-priority", "x-datadog-sampling-priority");
+        hdr.add("traceparent", trc);
+        hdr.add("x-cloud-trace-context", "x-cloud-trace-context");
+        hdr.add("grpc-trace-bin", "grpc-trace-bin");
+        hdr.add("sw8", "sw8");
+        hdr.add("jwt", "jwt");
         return hdr;
     }
 
@@ -147,7 +178,7 @@ public class TransmitterServiceResourcePropagateHeaderTest {
         public String ping(@Context final HttpHeaders headers) throws JsonProcessingException {
             final Map<String, String> hdrs = new HashMap<>();
             headers.getRequestHeaders().forEach((key, value) -> hdrs.put(key, value.getFirst()));
-            return new ObjectMapper().writeValueAsString(hdrs);
+            return new ObjectMapper().writeValueAsString(headers.getRequestHeaders());
         }
     }
 

@@ -26,6 +26,7 @@ package mesh.test.rest.incomings.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -75,6 +76,7 @@ public class PingResource implements PingService {
     @GET
     @Path("/pinghdr")
     @Produces("application/json")
+    @WithSpan("pingTwo")
     public String pingTwo(@Context final HttpHeaders headers) throws JsonProcessingException {
         final Map<String, String> hdrs = new HashMap<>();
         headers.getRequestHeaders().forEach((key, value) -> hdrs.put(key, value.getFirst()));
@@ -83,11 +85,13 @@ public class PingResource implements PingService {
     }
 
     @Override
+    @WithSpan("count")
     public String count() {
         return String.valueOf(this.counter.count());
     }
 
     @Override
+    @WithSpan("reset")
     public String reset() {
         return String.valueOf(this.counter.reset());
     }

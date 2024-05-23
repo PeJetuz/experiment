@@ -26,14 +26,14 @@ package mesh.test.rest.incomings.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.helidon.tracing.Span;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
-import java.util.HashMap;
-import java.util.Map;
 import mesh.test.rest.incomings.controllers.api.ApiException;
 import mesh.test.rest.incomings.controllers.api.PingApi;
 import mesh.test.rest.incomings.controllers.api.TransmitterService;
@@ -76,21 +76,25 @@ public class TransmitterServiceResource implements TransmitterService {
     }
 
     @Override
+    @WithSpan("req_callcount")
     public String callcount() {
+        traceMethod("callcount");
         try {
             return this.ping.count();
         } catch (final ApiException aex) {
-            LOG.log(System.Logger.Level.ERROR, aex);
+            traceError("callcount", aex);
             throw new MyException(aex.getResponse(), aex);
         }
     }
 
     @Override
+    @WithSpan("req_callping")
     public String callping() {
+        traceMethod("callping");
         try {
             return this.ping.ping();
         } catch (final ApiException aex) {
-            LOG.log(System.Logger.Level.ERROR, aex);
+            traceError("callping", aex);
             throw new MyException(aex.getResponse(), aex);
         }
     }
@@ -98,15 +102,45 @@ public class TransmitterServiceResource implements TransmitterService {
     @GET
     @Path("/callpinghdr")
     @Produces("application/json")
+    @WithSpan("req_callpinghdr")
     public String callpinghdr(@Context final HttpHeaders headers) throws JsonProcessingException {
-        final Map<String, String> hdrs = new HashMap<>();
-        headers.getRequestHeaders().forEach((key, value) -> hdrs.put(key, value.getFirst()));
-        LOG.log(System.Logger.Level.INFO, new ObjectMapper().writeValueAsString(hdrs));
+        traceMethod("callpinghdr");
+        LOG.log(
+            System.Logger.Level.INFO,
+            new ObjectMapper().writeValueAsString(headers.getRequestHeaders())
+        );
         try {
             return this.pinghdr.pinghdr();
         } catch (final ApiException aex) {
-            LOG.log(System.Logger.Level.ERROR, aex);
+            traceError("callpinghdr", aex);
             throw new MyException(aex.getResponse(), aex);
         }
+    }
+
+    private static void traceMethod(final String method) {
+        final Span span = Span.current().get();
+        LOG.log(
+            System.Logger.Level.INFO,
+            String.format(
+                "%s [trace: %s, span: %s]",
+                method,
+                span.context().traceId(),
+                span.context().spanId()
+            )
+        );
+    }
+
+    private static void traceError(final String method, final ApiException aex) {
+        final Span span = Span.current().get();
+        LOG.log(
+            System.Logger.Level.ERROR,
+            String.format(
+                "%s [trace: %s, span: %s]:%n%s",
+                method,
+                span.context().traceId(),
+                span.context().spanId(),
+                aex.getMessage()
+            )
+        );
     }
 }

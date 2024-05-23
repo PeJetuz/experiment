@@ -1,4 +1,14 @@
 security:
   enabled: false
+metrics:
+  rest-request:
+    enabled: false
+otel:
+  sdk:
+    disabled: false
+  traces:
+    exporter: jaeger
+  exporter:
+    name: svc_req
 
 svc_ping/mp-rest/url: http://localhost:8282/test

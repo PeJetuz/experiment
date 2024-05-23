@@ -24,8 +24,10 @@
 
 package mesh.test.rest.incomings.controllers;
 
+import io.helidon.microprofile.config.ConfigCdiExtension;
 import io.helidon.microprofile.server.JaxRsCdiExtension;
 import io.helidon.microprofile.server.ServerCdiExtension;
+import io.helidon.microprofile.telemetry.TelemetryCdiExtension;
 import io.helidon.microprofile.testing.junit5.AddBean;
 import io.helidon.microprofile.testing.junit5.AddExtension;
 import io.helidon.microprofile.testing.junit5.DisableDiscovery;
@@ -59,6 +61,8 @@ import org.junit.jupiter.api.Test;
 @AddExtension(ServerCdiExtension.class)
 @AddExtension(JaxRsCdiExtension.class)
 @AddExtension(CdiComponentProvider.class)
+@AddExtension(TelemetryCdiExtension.class)
+@AddExtension(ConfigCdiExtension.class)
 public class TransmitterServiceResourceTest {
 
     /**
