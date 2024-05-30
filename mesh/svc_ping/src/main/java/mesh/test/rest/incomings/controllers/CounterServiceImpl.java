@@ -24,6 +24,9 @@
 
 package mesh.test.rest.incomings.controllers;
 
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.trace.Span;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.time.Duration;
@@ -85,8 +88,20 @@ public class CounterServiceImpl implements CounterService {
     @Override
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public long ping() {
+        final Span span = Span.current();
         final long current = this.counter.getAndIncrement();
         LOG.log(System.Logger.Level.TRACE, String.format("Old counter = %d", current));
+        span.addEvent(
+            "svc_ping::CounterServiceImpl::ping",
+            Attributes.of(
+                AttributeKey.stringKey("Count"),
+                String.valueOf(current)
+            )
+        );
+        span.setAttribute(
+            "svc_ping::CounterServiceImpl::Count",
+            String.valueOf(current)
+        );
         if (current > 10 && current < 15) {
             LOG.log(
                 System.Logger.Level.ERROR,

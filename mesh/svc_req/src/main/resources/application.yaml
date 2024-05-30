@@ -11,6 +11,13 @@ otel:
     exporter: jaeger
   exporter:
     name: svc_req
+    jaeger:
+      endpoint: http://example:4317
+tracing:
+  service: "svc_req"
+  protocol: "grpc"
+  host: "jaeger-collector.istio-system.svc.cluster.local"
+  port: 14250
 org.eclipse.microprofile.rest.client.propagateHeaders: >-
   x-request-id,x-b3-traceid,x-b3-spanid,x-b3-parentspanid,x-b3-sampled,x-b3-flags,
   x-ot-span-context,x-datadog-trace-id,x-datadog-parent-id,x-datadog-sampling-priority,

@@ -192,8 +192,18 @@ spec:
         ports:
         - containerPort: 8080
         env:
-        - name: COUNTERSERVICE_DELAY
-          value: "5"
+          - name: COUNTERSERVICE_DELAY
+            value: "5"
+          - name: TRACING_SERVICE
+            value: "svc_ping_tr_v1"
+          - name: TRACING_PROTOCOL
+            value: "grpc"
+          - name: OTEL_PROPAGATORS
+            value: "jaeger"
+          - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+            value: "http://jaeger-collector.istio-system.svc.cluster.local:14250"
+          - name: OTEL_SERVICE_NAME
+            value: "svc_ping_v1"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -224,4 +234,18 @@ spec:
         env:
         - name: COUNTERSERVICE_DELAY
           value: "5"
+        - name: TRACING_SERVICE
+          value: "svc_ping"
+        - name: TRACING_PROTOCOL
+          value: "http"
+        - name: TRACING_HOST
+          value: "jaeger-collector.istio-system.svc.cluster.local"
+        - name: TRACING_PORT
+          value: "4317"
+        - name: OTEL_PROPAGATORS
+          value: "jaeger"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://jaeger-collector.istio-system.svc.cluster.local:4317"
+        - name: OTEL_SERVICE_NAME
+          value: "svc_ping_v2"
 ---

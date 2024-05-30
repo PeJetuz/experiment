@@ -30,6 +30,14 @@
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk-extension-autoconfigure-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-jaeger</artifactId>
             <exclusions>
                 <exclusion>
@@ -263,9 +271,6 @@
                             </artifactItems>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>copy-libs</id>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -283,6 +288,9 @@
                             <sourceFile>${project.build.directory}/dependency/oas/svc_ping.yaml</sourceFile>
                             <destinationFile>${basedir}/target/classes/META-INF/openapi.yaml</destinationFile>
                         </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-libs</id>
                     </execution>
                 </executions>
             </plugin>

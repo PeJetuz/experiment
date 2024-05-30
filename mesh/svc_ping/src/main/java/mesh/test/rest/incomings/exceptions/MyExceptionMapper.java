@@ -24,6 +24,9 @@
 
 package mesh.test.rest.incomings.exceptions;
 
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.trace.Span;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
@@ -38,6 +41,14 @@ import jakarta.ws.rs.ext.Provider;
 public class MyExceptionMapper implements ExceptionMapper<MyException> {
     @Override
     public Response toResponse(final MyException exception) {
+        final Span span = Span.current();
+        span.recordException(
+            exception,
+            Attributes.of(
+                AttributeKey.stringKey("svc_ping::MyExceptionMapper::MyException"),
+                "Error"
+            )
+        );
         return Response
             .status(Response.Status.INTERNAL_SERVER_ERROR)
             .entity(exception.getMessage())

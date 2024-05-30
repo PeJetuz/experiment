@@ -4,5 +4,24 @@ server:
 metrics:
   rest-request:
     enabled: false
+otel:
+  sdk:
+    disabled: false
+  traces:
+    exporter: jaeger
+  exporter:
+    name: svc_ping
+    jaeger:
+      endpoint: http://example:4317
+#    otlp:
+#    endpoint: http://example:4317
+#  agent:
+#    present: true
+tracing:
+  service: "svc_ping"
+  protocol: "grpc"
+#  host: "jaeger-collector.istio-system.svc.cluster.local"
+  host: "localhost"
+  port: 4317
 counterservice:
   delay: 5
