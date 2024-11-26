@@ -51,6 +51,10 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
         <testcontainers.version>1.19.7</testcontainers.version>
         <kafka.image>bitnami/kafka:3.6.1</kafka.image>
         <kafka.name>kafka</kafka.name>
+        <kafka.version>3.6.1</kafka.version>
+        <pulsar.image>apachepulsar/pulsar:3.3.1</pulsar.image>
+        <pulsar.name>pulsar</pulsar.name>
+        <pulsar.version>3.3.1</pulsar.version>
     </properties>
 
     <dependencies>
@@ -59,11 +63,57 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
             <artifactId>policy</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>annotations</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>3.6.1</version>
+            <version>${kafka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client-admin</artifactId>
+            <version>${pulsar.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.activation</groupId>
+                    <artifactId>javax.activation</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.avro</groupId>
+                    <artifactId>avro</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.pulsar</groupId>
+                    <artifactId>pulsar-client-admin-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.pulsar</groupId>
+                    <artifactId>pulsar-client-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client-admin-api</artifactId>
+            <version>${pulsar.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client-api</artifactId>
+            <version>${pulsar.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- testing -->
@@ -181,6 +231,26 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                                         </ports>
                                     </run>
                                 </image>
+                                <image>
+                                    <alias>${pulsar.name}</alias>
+                                    <name>${pulsar.image}</name>
+                                    <run>
+                                        <hostname>${pulsar.name}</hostname>
+                                        <ports>
+                                            <port>6650:6650</port>
+                                            <port>8585:8080</port>
+                                        </ports>
+                                        <volumes>
+                                            <bind>
+                                                <volume>/pulsar/data</volume>
+                                                <volume>/pulsar/conf</volume>
+                                            </bind>
+                                        </volumes>
+                                        <cmd>
+                                            <shell>bin/pulsar standalone</shell>
+                                        </cmd>
+                                    </run>
+                                </image>
                             </images>
                         </configuration>
                         <executions>
@@ -239,6 +309,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                                 <exclude>pmd:/src/test/.*/KafkaTest.*</exclude>
                                 <exclude>checkstyle:\\src\\test\\.*\\KafkaTest.*</exclude>
                                 <exclude>pmd:\\src\\test\\.*\\KafkaTest.*</exclude>
+                                <exclude>duplicatefinder:.*</exclude>
                             </excludes>
                         </configuration>
                     </plugin>
@@ -294,7 +365,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                                     <resultFileMinClasspathCount>2</resultFileMinClasspathCount>
                                     <resultFile>${project.build.directory}/duplicate-finder-result.xml</resultFile>
                                     <ignoredResourcePatterns>
-                                        <ignoredResourcePattern>draftv3/schema</ignoredResourcePattern>
+                                        <ignoredResourcePattern>findbugsExclude.xml</ignoredResourcePattern>
                                     </ignoredResourcePatterns>
                                 </configuration>
                             </execution>
