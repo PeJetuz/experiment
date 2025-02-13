@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "my.test.protobuf";
+option java_outer_classname = "TestOuter";
+
+message Message {
+    string title = 1;
+    repeated string messsage = 2;
+    int32 some_number = 3;
+}

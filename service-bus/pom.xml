@@ -49,12 +49,18 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <properties>
         <testcontainers.version>1.19.7</testcontainers.version>
-        <kafka.image>bitnami/kafka:3.6.1</kafka.image>
+        <kafka.image>bitnami/kafka:3.9.0</kafka.image>
         <kafka.name>kafka</kafka.name>
-        <kafka.version>3.6.1</kafka.version>
-        <pulsar.image>apachepulsar/pulsar:3.3.1</pulsar.image>
+        <kafka.version>3.9.0</kafka.version>
+        <pulsar.image>apachepulsar/pulsar:4.0.2</pulsar.image>
         <pulsar.name>pulsar</pulsar.name>
-        <pulsar.version>3.3.1</pulsar.version>
+        <pulsar.version>4.0.2</pulsar.version>
+        <schema-registry.image>bitnami/schema-registry:7.8.0</schema-registry.image>
+        <schema-registry.name>schema-registry</schema-registry.name>
+        <version.lib.google-protobuf>3.25.5</version.lib.google-protobuf>
+        <version.lib.grpc>1.70.0</version.lib.grpc>
+        <version.plugin.os>1.7.1</version.plugin.os>
+        <version.kafka.protobuf.serializer>7.8.0</version.kafka.protobuf.serializer>
     </properties>
 
     <dependencies>
@@ -74,6 +80,18 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
             <version>${kafka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-protobuf-serializer</artifactId>
+            <version>${version.kafka.protobuf.serializer}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${version.lib.google-protobuf}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.pulsar</groupId>
@@ -132,9 +150,51 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jcabi</groupId>
+            <artifactId>jcabi-matchers</artifactId>
+            <version>1.8.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>${version.plugin.os}</version>
+            </extension>
+        </extensions>
         <plugins>
+            <plugin>
+                <groupId>org.xolstice.maven.plugins</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
+                <version>0.6.1</version>
+                <configuration>
+                    <protocArtifact>
+                        com.google.protobuf:protoc:${version.lib.google-protobuf}:exe:${os.detected.classifier}
+                    </protocArtifact>
+                    <pluginId>grpc-java</pluginId>
+                    <pluginArtifact>
+                        io.grpc:protoc-gen-grpc-java:${version.lib.grpc}:exe:${os.detected.classifier}
+                    </pluginArtifact>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>test-compile</goal>
+                            <goal>compile-custom</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -220,7 +280,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                                         <env>
                                             <KAFKA_CFG_NODE_ID>0</KAFKA_CFG_NODE_ID>
                                             <KAFKA_CFG_PROCESS_ROLES>controller,broker</KAFKA_CFG_PROCESS_ROLES>
-                                            <KAFKA_CFG_LISTENERS>PLAINTEXT://:9092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094</KAFKA_CFG_LISTENERS>
+                                            <KAFKA_CFG_LISTENERS>PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:9094</KAFKA_CFG_LISTENERS>
                                             <KAFKA_CFG_ADVERTISED_LISTENERS>PLAINTEXT://${kafka.name}:9092,EXTERNAL://localhost:9094</KAFKA_CFG_ADVERTISED_LISTENERS>
                                             <KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP>CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT</KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP>
                                             <KAFKA_CFG_CONTROLLER_QUORUM_VOTERS>0@${kafka.name}:9093</KAFKA_CFG_CONTROLLER_QUORUM_VOTERS>
@@ -229,6 +289,30 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                                         <ports>
                                             <port>9094:9094</port>
                                         </ports>
+                                    </run>
+                                </image>
+                                <image>
+                                    <alias>${schema-registry.name}</alias>
+                                    <name>${schema-registry.image}</name>
+                                    <run>
+                                        <hostname>${schema-registry.name}</hostname>
+                                        <env>
+                                            <SCHEMA_REGISTRY_KAFKA_BROKERS>PLAINTEXT://${kafka.name}:9092</SCHEMA_REGISTRY_KAFKA_BROKERS>
+                                            <SCHEMA_REGISTRY_LISTENERS>http://0.0.0.0:8081</SCHEMA_REGISTRY_LISTENERS>
+                                            <SCHEMA_REGISTRY_DEBUG>true</SCHEMA_REGISTRY_DEBUG>
+                                        </env>
+                                        <ports>
+                                            <port>8081:8081</port>
+                                        </ports>
+                                        <links>
+                                            <link>${kafka.name}</link>
+                                        </links>
+                                        <wait>
+                                            <http>
+                                                <url>http://localhost:8081/v1/metadata/id</url>
+                                            </http>
+                                            <time>100000</time>
+                                        </wait>
                                     </run>
                                 </image>
                                 <image>
@@ -366,6 +450,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                                     <resultFile>${project.build.directory}/duplicate-finder-result.xml</resultFile>
                                     <ignoredResourcePatterns>
                                         <ignoredResourcePattern>findbugsExclude.xml</ignoredResourcePattern>
+                                        <ignoredResourcePattern>^(google[/.]protobuf).*</ignoredResourcePattern>
                                     </ignoredResourcePatterns>
                                 </configuration>
                             </execution>
@@ -399,4 +484,11 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
             </build>
         </profile>
     </profiles>
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <name>confluent</name>
+            <url>https://packages.confluent.io/maven</url>
+        </repository>
+    </repositories>
 </project>

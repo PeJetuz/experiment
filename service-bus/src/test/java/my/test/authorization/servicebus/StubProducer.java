@@ -39,6 +39,7 @@ import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.Uuid;
 import org.apache.kafka.common.errors.ProducerFencedException;
 
 /**
@@ -127,6 +128,11 @@ final class StubProducer implements Producer<String, String> {
     @Override
     public void close(final Duration timeout) {
         //do nothing
+    }
+
+    @Override
+    public Uuid clientInstanceId(final Duration timeout) {
+        return null;
     }
 
     public ProducerRecord<String, String> msg() {
